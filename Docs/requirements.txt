@@ -1,0 +1,22 @@
+# Deep Learning Capstone - CIFAR-10 with Dense networks
+#
+# Requires Python 3.11-3.13 (numpy, pandas and scikit-learn below need >=3.11).
+#
+#   python -m venv .venv
+#   .venv\Scripts\activate          # Windows
+#   source .venv/bin/activate       # macOS / Linux
+#   pip install -r Docs/requirements.txt
+#
+# Ranges rather than exact pins so the install resolves across different OS and
+# Python combinations. The versions we developed and tested against are noted
+# alongside; pin to those exactly if you ever need to reproduce a run bit for bit.
+
+tensorflow>=2.19,<3        # tested 2.21.0  (Keras 3 API)
+numpy>=2.1,<3              # tested 2.4.4
+pandas>=2.2,<4             # tested 3.0.2
+matplotlib>=3.9,<4         # tested 3.10.8
+scikit-learn>=1.5,<2       # tested 1.8.0   (confusion matrix + classification report, Part 16)
+ipykernel>=6.29            # tested 7.2.0   (needed to run notebooks in VS Code or Jupyter)
+
+# Optional - only if you want the browser UI instead of the VS Code notebook editor:
+# jupyterlab>=4.2

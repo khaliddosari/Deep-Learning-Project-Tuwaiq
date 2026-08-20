@@ -1,0 +1,41 @@
+# ---------------------------------------------------------------- data
+# CIFAR-10 is downloaded by Keras into ~/.keras/datasets on each machine.
+# Never commit image data or trained weights -- GitHub rejects files >100 MB.
+Dataset/*
+!Dataset/.gitkeep
+# Small + intentionally shared: this IS our split.
+!Dataset/splits.npz
+*.npy
+
+# ---------------------------------------------------------------- models
+Models/
+*.keras
+*.h5
+*.weights.h5
+checkpoints/
+logs/
+runs/
+
+# ---------------------------------------------------------------- results
+# Keep the small JSON/CSV experiment records; drop the heavy renders.
+Results/**/*.png
+Results/**/*.pdf
+!Results/.gitkeep
+
+# ---------------------------------------------------------------- python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# ---------------------------------------------------------------- notebooks
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# ---------------------------------------------------------------- editors / os
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
