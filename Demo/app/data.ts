@@ -528,6 +528,43 @@ export const cnnComparison = [
   },
 ];
 
+export const mobilenetBenchmark = {
+  name: "MobileNetV2 CNN (ImageNet Pretrained + Augmented Cosine Fine-Tuning)",
+  testAccuracy: 0.9124,
+  testLoss: 0.7092,
+  weightedF1: 0.9120,
+  params: 2_593_610,
+  epochs: 6,
+  gainPoints: 37.16,
+  latencyMs: 2.0,
+  gradioAppCommand: "python app.py",
+  hfSpaceUrl: "https://huggingface.co/spaces",
+};
+
+export interface SampleTrial {
+  name: string;
+  src: string;
+  densePred: string;
+  denseConf: number;
+  denseF1: number;
+  cnnPred: string;
+  cnnConf: number;
+  notes: string;
+}
+
+export const mobilenetSamples: SampleTrial[] = [
+  { name: "airplane", src: "/samples/airplane.png", densePred: "airplane", denseConf: 48.2, denseF1: 0.60, cnnPred: "airplane", cnnConf: 84.6, notes: "Dense recognizes broad sky contrast but struggles with wing angle. CNN detects aerodynamic edges directly." },
+  { name: "automobile", src: "/samples/automobile.png", densePred: "truck", denseConf: 44.1, denseF1: 0.64, cnnPred: "automobile", cnnConf: 87.4, notes: "Automobile vs truck was the 2nd largest confusion pair in Dense (330 errors). MobileNet cleanly disambiguates wheel arches and roofline." },
+  { name: "bird", src: "/samples/bird.png", densePred: "bird", denseConf: 42.8, denseF1: 0.42, cnnPred: "bird", cnnConf: 85.0, notes: "Dense model's bird recall was only 42%. CNN separates feather texture and beak contour from background foliage." },
+  { name: "cat", src: "/samples/cat.png", densePred: "dog", denseConf: 49.3, denseF1: 0.36, cnnPred: "cat", cnnConf: 86.5, notes: "Cat was the absolute hardest class in Dense (0.36 F1, 383 dog confusion errors). MobileNet classifies cat with 86.5% confidence." },
+  { name: "deer", src: "/samples/deer.png", densePred: "horse", denseConf: 41.5, denseF1: 0.49, cnnPred: "deer", cnnConf: 86.8, notes: "Dense confused quadruped postures with horse/dog. CNN resolves antler contours and slender leg proportions." },
+  { name: "dog", src: "/samples/dog.png", densePred: "cat", denseConf: 45.7, denseF1: 0.43, cnnPred: "dog", cnnConf: 90.7, notes: "Dog was the 2nd hardest animal class in Dense. MobileNet achieves 90.7% confidence via spatial snout and ear feature maps." },
+  { name: "frog", src: "/samples/frog.png", densePred: "frog", denseConf: 58.6, denseF1: 0.65, cnnPred: "frog", cnnConf: 89.1, notes: "Frog had highest animal recall in Dense due to green chroma. CNN further increases confidence from 58% to 89%." },
+  { name: "horse", src: "/samples/horse.png", densePred: "horse", denseConf: 52.4, denseF1: 0.58, cnnPred: "horse", cnnConf: 96.2, notes: "MobileNet achieves near-certainty (96.2% confidence) on equine torso and mane structure." },
+  { name: "ship", src: "/samples/ship.png", densePred: "ship", denseConf: 62.1, denseF1: 0.68, cnnPred: "ship", cnnConf: 85.1, notes: "Easiest class in Dense due to horizontal water line. MobileNet solidifies classification with 85.1% confidence." },
+  { name: "truck", src: "/samples/truck.png", densePred: "truck", denseConf: 53.0, denseF1: 0.59, cnnPred: "truck", cnnConf: 91.8, notes: "Dense frequently confused trucks with automobiles. MobileNet captures rectangular freight geometry with 91.8% confidence." },
+];
+
 /** The project's own evidence that the ceiling is architectural. */
 export const cnnEvidence = [
   {

@@ -18,5 +18,9 @@ matplotlib>=3.9,<4         # tested 3.10.8
 scikit-learn>=1.5,<2       # tested 1.8.0   (confusion matrix + classification report, Part 16)
 ipykernel>=6.29            # tested 7.2.0   (needed to run notebooks in VS Code or Jupyter)
 
+# Interactive Web Demo & Hugging Face Deployment (Part 20 Extension):
+gradio>=4.0                # tested 6.25.0
+pillow>=10.0               # tested 12.1.1
+
 # Optional - only if you want the browser UI instead of the VS Code notebook editor:
 # jupyterlab>=4.2

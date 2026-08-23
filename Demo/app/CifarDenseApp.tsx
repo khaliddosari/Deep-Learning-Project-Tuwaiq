@@ -33,6 +33,8 @@ import {
   GAP_PEAK,
   learningRateRuns,
   learningRateVerdict,
+  mobilenetBenchmark,
+  mobilenetSamples,
   navItems,
   optimizerRuns,
   optimizerVerdict,
@@ -1059,6 +1061,8 @@ function Insights({ navigate }: { navigate: (view: ViewId) => void }) {
 // ---------------------------------------------------------------- view 4
 
 function Deployment() {
+  const [selectedSample, setSelectedSample] = useState(0);
+
   return (
     <section className="view">
       <PageHeading
@@ -1166,6 +1170,85 @@ function Deployment() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <SectionHeading note="Empirical benchmark · high-performance fine-tuning">MobileNetV2 CNN vs Shipped Dense</SectionHeading>
+      <div className="deploy-hero">
+        <article className="deploy-card">
+          <h2>{mobilenetBenchmark.name}</h2>
+          <p>
+            Trained on the same committed CIFAR-10 split in 6 epochs (2 warmup + 4 fine-tuning on laptop CPU) with data augmentation, label smoothing, and cosine decay scheduling.
+          </p>
+          <div className="contract">
+            <div>
+              <span>Test accuracy gain</span>
+              <p>+{mobilenetBenchmark.gainPoints}% percentage points over Dense baseline ({pct(deploymentCard.accuracy)} → {pct(mobilenetBenchmark.testAccuracy)})</p>
+            </div>
+            <div>
+              <span>Deployment & Interactive Demo</span>
+              <p>Run locally via <code>{mobilenetBenchmark.gradioAppCommand}</code> or deploy to Hugging Face Spaces with Gradio.</p>
+            </div>
+          </div>
+        </article>
+        <div className="stack stack-tight">
+          <Metric value={mobilenetBenchmark.params.toLocaleString()} label="trainable parameters" tone="green" />
+          <Metric value={`${mobilenetBenchmark.epochs} epochs`} label="training budget (CPU)" tone="aqua" />
+          <Metric value={pct(mobilenetBenchmark.testAccuracy)} label="test accuracy on 10k images" tone="orange" />
+        </div>
+      </div>
+
+      <SectionHeading note="Interactive Presentation · 10 CIFAR-10 Classes">Live sample comparison trial</SectionHeading>
+      <div className="table-card">
+        <div className="table-title">
+          <h2><Dot tone="purple" />Select a sample class to compare model predictions</h2>
+          <span>Click any of the 10 CIFAR-10 classes below</span>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", padding: "1rem" }}>
+          {mobilenetSamples.map((sample, idx) => (
+            <button
+              key={sample.name}
+              onClick={() => setSelectedSample(idx)}
+              style={{
+                padding: "0.4rem 0.8rem",
+                borderRadius: "6px",
+                border: "1px solid",
+                borderColor: selectedSample === idx ? "#6366f1" : "rgba(255, 255, 255, 0.15)",
+                background: selectedSample === idx ? "rgba(99, 102, 241, 0.2)" : "rgba(255, 255, 255, 0.03)",
+                color: selectedSample === idx ? "#818cf8" : "inherit",
+                cursor: "pointer",
+                fontWeight: selectedSample === idx ? "600" : "400",
+                textTransform: "capitalize",
+              }}
+            >
+              {sample.name}
+            </button>
+          ))}
+        </div>
+
+        {(() => {
+          const s = mobilenetSamples[selectedSample];
+          return (
+            <div style={{ padding: "1rem", display: "grid", gridTemplateColumns: "100px 1fr 1fr", gap: "1.5rem", alignItems: "center" }}>
+              <div style={{ textAlign: "center" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={s.src} alt={s.name} style={{ width: "64px", height: "64px", imageRendering: "pixelated", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.2)" }} />
+                <small style={{ display: "block", marginTop: "4px", textTransform: "capitalize", opacity: 0.8 }}>Ground Truth: <b>{s.name}</b></small>
+              </div>
+
+              <div style={{ background: "rgba(239, 68, 68, 0.08)", padding: "0.75rem 1rem", borderRadius: "8px", borderLeft: "3px solid #ef4444" }}>
+                <span style={{ fontSize: "0.8rem", color: "#f87171", textTransform: "uppercase", fontWeight: 600 }}>Dense Model (Flattened)</span>
+                <p style={{ margin: "4px 0", fontSize: "1.05rem" }}>Predicted: <b>{s.densePred}</b> ({s.denseConf}%)</p>
+                <small style={{ opacity: 0.75 }}>Class F1: {s.denseF1}</small>
+              </div>
+
+              <div style={{ background: "rgba(34, 197, 94, 0.08)", padding: "0.75rem 1rem", borderRadius: "8px", borderLeft: "3px solid #22c55e" }}>
+                <span style={{ fontSize: "0.8rem", color: "#4ade80", textTransform: "uppercase", fontWeight: 600 }}>MobileNetV2 CNN (Spatial)</span>
+                <p style={{ margin: "4px 0", fontSize: "1.05rem" }}>Predicted: <b>{s.cnnPred}</b> ({s.cnnConf}%)</p>
+                <small style={{ opacity: 0.75 }}>{s.notes}</small>
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       <SectionHeading note="From this project's own measurements">Why we know the ceiling is architectural</SectionHeading>
