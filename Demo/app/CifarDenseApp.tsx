@@ -1185,8 +1185,14 @@ function Deployment() {
               <p>+{mobilenetBenchmark.gainPoints}% percentage points over Dense baseline ({pct(deploymentCard.accuracy)} → {pct(mobilenetBenchmark.testAccuracy)})</p>
             </div>
             <div>
-              <span>Deployment & Interactive Demo</span>
-              <p>Run locally via <code>{mobilenetBenchmark.gradioAppCommand}</code> or deploy to Hugging Face Spaces with Gradio.</p>
+              <span>Live Public Inference Demo</span>
+              <p>
+                <a href={mobilenetBenchmark.publicLiveUrl} target="_blank" rel="noreferrer" style={{ color: "#818cf8", fontWeight: 600, textDecoration: "underline" }}>
+                  Open Live Gradio Web App ↗
+                </a>
+                {" · "}
+                <code>{mobilenetBenchmark.gradioAppCommand}</code>
+              </p>
             </div>
           </div>
         </article>

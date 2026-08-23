@@ -538,6 +538,7 @@ export const mobilenetBenchmark = {
   gainPoints: 37.16,
   latencyMs: 2.0,
   gradioAppCommand: "python app.py",
+  publicLiveUrl: "https://de7379d060ce1e8656.gradio.live",
   hfSpaceUrl: "https://huggingface.co/spaces",
 };
 

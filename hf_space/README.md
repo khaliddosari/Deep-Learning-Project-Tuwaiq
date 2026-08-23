@@ -19,7 +19,7 @@ Built as part of the Deep Learning Capstone Project at **Tuwaiq Academy** by **K
 ## Overview
 
 - **Dense Baseline (Shipped Model)**: 3 × 512 Dense layers, Dropout 0.3, Adam ($lr=10^{-4}$). Test accuracy: **54.08%**. Evaluates flattened 1D vectors ($3,072$ features) where pixel adjacency is destroyed.
-- **MobileNetV2 CNN (Fine-Tuned)**: Depthwise separable convolutions pre-trained on ImageNet and fine-tuned in only 4 epochs. Test accuracy: **~80%+**. Preserves 2D spatial arrangement, local textures, and translation equivariance.
+- **MobileNetV2 CNN (Fine-Tuned)**: Depthwise separable convolutions pre-trained on ImageNet and fine-tuned in 6 epochs (Augmentation + Label Smoothing + Cosine Decay). Test accuracy: **91.24%**. Preserves 2D spatial arrangement, local textures, and translation equivariance.
 
 ## How to Test
 1. Select any sample image from the pre-loaded CIFAR-10 gallery (representing all 10 classes) or upload your own 32×32 or standard resolution image.

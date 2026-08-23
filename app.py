@@ -282,4 +282,7 @@ with gr.Blocks(title="CIFAR-10: Dense MLP vs MobileNetV2 CNN") as demo:
 
 if __name__ == "__main__":
     load_models()
-    demo.launch(theme=custom_theme, server_name="0.0.0.0", server_port=7860, share=False)
+    app_res = demo.launch(theme=custom_theme, share=True)
+    if demo.share_url:
+        Path("public_url.txt").write_text(demo.share_url)
+        print(f"\n=========================================\nPUBLIC URL: {demo.share_url}\n=========================================\n", flush=True)
