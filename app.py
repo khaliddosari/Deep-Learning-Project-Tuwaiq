@@ -167,7 +167,7 @@ def predict(image: Image.Image | None):
 | **Total Parameters** | 2,103,818 | 2,593,610 |
 
 > **Key DL Insight (Part 20 Reflection):**
-> A Dense network cannot preserve pixel adjacency — moving an object by a few pixels completely changes all 3,072 input features. MobileNet's convolutional kernels slide across the 2D image plane, extracting hierarchical edges, textures, and objects with translation invariance.
+> A Dense network cannot preserve pixel adjacency, so moving an object by a few pixels completely changes all 3,072 input features. MobileNet's convolutional kernels slide across the 2D image plane, extracting hierarchical edges, textures, and objects with translation invariance.
 """
 
     return (

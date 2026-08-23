@@ -139,9 +139,9 @@ test("the Part 15 re-run matches the raw results it was generated from", async (
   // Each stated contrast must be the arithmetic it claims to be.
   const by = Object.fromEntries(rerunRuns.map((r) => [r.key, r.bestVal]));
   const expected = {
-    "L2 only − control": by.l2 - by.neither,
-    "Dropout only − control": by.dropout - by.neither,
-    "Dropout + L2 − Dropout only": by.both - by.dropout,
+    "L2 only vs control": by.l2 - by.neither,
+    "Dropout only vs control": by.dropout - by.neither,
+    "Dropout + L2 vs Dropout only": by.both - by.dropout,
   };
   for (const contrast of rerunContrasts) {
     const delta = expected[contrast.pair];

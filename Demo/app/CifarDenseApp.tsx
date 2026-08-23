@@ -54,25 +54,19 @@ import {
 } from "./data";
 import { curves, type Series } from "./curves";
 
-type Tone = "aqua" | "orange" | "purple" | "green" | "red";
-
-/** Series colours, in the order runs are listed. Kept away from the green that
- *  marks a selected run everywhere else in the app. */
-const SERIES_COLORS = ["#522cba", "#f4a664", "#2a78d6", "#e34948", "#1baf7a"];
+/** Series colours, in the order runs are listed. Chosen for contrast on a
+ *  projector and kept away from the green that marks a selected run. */
+const SERIES_COLORS = ["#4a27b0", "#c26a1b", "#1f66bd", "#c4302d", "#0f8a5f"];
 
 const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 const pts = (v: number) => `${(v * 100).toFixed(2)} pts`;
 
 // ---------------------------------------------------------------- primitives
 
-function Dot({ tone = "aqua" }: { tone?: Tone }) {
-  return <span className={`dot dot-${tone}`} aria-hidden="true" />;
-}
-
 function PageHeading({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle: string }) {
   return (
     <header className="page-heading">
-      <p className="eyebrow"><Dot />{eyebrow}</p>
+      <p className="eyebrow">{eyebrow}</p>
       <h1>{title}</h1>
       <p>{subtitle}</p>
     </header>
@@ -83,18 +77,17 @@ function SectionHeading({ children, note }: { children: ReactNode; note?: string
   return <h2 className="section-heading">{children}{note ? <small>{note}</small> : null}</h2>;
 }
 
-function Metric({ value, label, tone = "aqua", best = false }: { value: string; label: string; tone?: Tone; best?: boolean }) {
+function Metric({ value, label, best = false }: { value: string; label: string; best?: boolean }) {
   return (
     <article className={`metric-card${best ? " metric-best" : ""}`}>
-      <Dot tone={best ? "green" : tone} />
       <strong>{value}</strong>
       <span>{label}</span>
     </article>
   );
 }
 
-function Insight({ tone = "orange", children }: { tone?: Tone; children: ReactNode }) {
-  return <div className="insight-strip"><Dot tone={tone} /><strong>{children}</strong></div>;
+function Insight({ tone, children }: { tone?: "green" | "red"; children: ReactNode }) {
+  return <p className={`insight-strip${tone ? ` tone-${tone}` : ""}`}>{children}</p>;
 }
 
 function StatRows({ rows }: { rows: readonly (readonly [string, string])[] }) {
@@ -109,14 +102,14 @@ function StatRows({ rows }: { rows: readonly (readonly [string, string])[] }) {
 
 // ---------------------------------------------------------------- line chart
 
-const CHART_W = 560;
-const CHART_H = 250;
-const PAD = { top: 14, right: 14, bottom: 30, left: 46 };
+const CHART_W = 620;
+const CHART_H = 300;
+const PAD = { top: 18, right: 20, bottom: 52, left: 78 };
 
 type Line = { label: string; values: readonly number[]; color: string; dashed?: boolean };
 
-/** Per-epoch line chart. Every point is a real epoch from a real run — there is
- *  no smoothing and no interpolation, so a kink in a curve is a kink in the run. */
+/** Per-epoch line chart. Every point is a real epoch from a real run, with no
+ *  smoothing and no interpolation, so a kink in a curve is a kink in the run. */
 function LineChart({
   lines,
   yFormat = (v: number) => v.toFixed(2),
@@ -151,15 +144,15 @@ function LineChart({
         {yTicks.map((tick) => (
           <g key={tick}>
             <line className="grid" x1={PAD.left} x2={CHART_W - PAD.right} y1={y(tick)} y2={y(tick)} />
-            <text x={PAD.left - 8} y={y(tick) + 3} textAnchor="end">{yFormat(tick)}</text>
+            <text x={PAD.left - 12} y={y(tick) + 5} textAnchor="end">{yFormat(tick)}</text>
           </g>
         ))}
         <line className="axis" x1={PAD.left} x2={PAD.left} y1={PAD.top} y2={CHART_H - PAD.bottom} />
         <line className="axis" x1={PAD.left} x2={CHART_W - PAD.right} y1={CHART_H - PAD.bottom} y2={CHART_H - PAD.bottom} />
         {xTicks.map((i) => (
-          <text key={i} x={x(i)} y={CHART_H - PAD.bottom + 14} textAnchor="middle">{i + 1}</text>
+          <text key={i} x={x(i)} y={CHART_H - PAD.bottom + 24} textAnchor="middle">{i + 1}</text>
         ))}
-        <text className="axis-label" x={PAD.left + plotW / 2} y={CHART_H - 2} textAnchor="middle">Epoch</text>
+        <text className="axis-label" x={PAD.left + plotW / 2} y={CHART_H - 6} textAnchor="middle">Epoch</text>
         {lines.map((line) => (
           <path
             key={line.label}
@@ -240,47 +233,40 @@ function BeforeOptimization() {
   return (
     <section className="view">
       <div className="hero">
-        <div className="hero-orbit orbit-one" aria-hidden="true" />
-        <div className="hero-orbit orbit-two" aria-hidden="true" />
-        <div className="hero-copy">
-          <p className="hero-kicker">DEEP LEARNING CAPSTONE · PARTS 1–8</p>
-          <h1>Before<br />optimization</h1>
-          <p className="hero-lede">
-            One baseline and three depths, all trained on the same split with the same seed. Depth moved best
-            validation accuracy by 0.76 points and widened the generalization gap by 17.75. The problem was never
-            capacity.
-          </p>
-        </div>
+        <p className="hero-kicker">DEEP LEARNING CAPSTONE · PARTS 1 TO 8</p>
+        <h1>Before<br />optimization</h1>
+        <p className="hero-lede">
+          One baseline and three depths, all trained on the same split with the same seed. Depth moved best
+          validation accuracy by 0.76 points and widened the generalization gap by 17.75. The problem was never
+          capacity.
+        </p>
       </div>
 
       <div className="metric-grid hero-metrics">
-        <Metric value={pct(baseline.bestValAccuracy)} label="baseline validation accuracy · 1 × 512" />
-        <Metric value="10%" label="random-guess floor the baseline had to beat" tone="purple" />
-        <Metric value={`${architectureSpread.points} pts`} label={`spread across all three depths — ${architectureSpread.images} images`} tone="orange" />
-        <Metric value={`${architectures[0].gap.toFixed(2)} → ${architectures[2].gap.toFixed(2)}`} label="generalization gap, shallow to deep" tone="red" />
+        <Metric value={pct(baseline.bestValAccuracy)} label="baseline validation accuracy, 1 × 512" />
+        <Metric value="10%" label="random-guess floor the baseline had to beat" />
+        <Metric value={`${architectureSpread.points} pts`} label={`spread across all three depths, ${architectureSpread.images} images`} />
+        <Metric value={`${architectures[0].gap.toFixed(2)} to ${architectures[2].gap.toFixed(2)}`} label="generalization gap, shallow to deep" />
       </div>
 
       <div className="rule-note">
-        <Dot tone="orange" />
-        <div>
-          <strong>One rule shapes everything: {project.rule}</strong>
-          <p>
-            Every image must be flattened before it reaches the first layer — 32 × 32 × 3 becomes 3,072 × 1. That single
-            decision sets the ceiling for every experiment that follows.
-          </p>
-        </div>
+        <strong>One rule shapes everything: {project.rule}</strong>
+        <p>
+          Every image must be flattened before it reaches the first layer, so 32 × 32 × 3 becomes 3,072 × 1. That single
+          decision sets the ceiling for every experiment that follows.
+        </p>
       </div>
 
-      <SectionHeading note="Parts 1–2">The data and the split</SectionHeading>
+      <SectionHeading note="Parts 1 and 2">The data and the split</SectionHeading>
       <div className="metric-grid">
         {datasetFacts.map((fact) => (
-          <Metric key={fact.label} value={fact.value} label={`${fact.label} — ${fact.note}`} tone="purple" />
+          <Metric key={fact.label} value={fact.value} label={`${fact.label}, ${fact.note}`} />
         ))}
       </div>
       <div className="table-card">
         <div className="table-title">
-          <h2><Dot />Split once, shared by every experiment</h2>
-          <span>seed {project.seed} · indices committed to splits.npz</span>
+          <h2>Split once, shared by every experiment</h2>
+          <span>seed {project.seed}, indices committed to splits.npz</span>
         </div>
         <div className="setting-list">
           {splitRows.map((row) => (
@@ -300,7 +286,7 @@ function BeforeOptimization() {
       <SectionHeading note="Part 3">The baseline</SectionHeading>
       <div className="two-col">
         <article className="soft-card">
-          <h2><Dot />{baseline.architecture}</h2>
+          <h2>{baseline.architecture}</h2>
           <StatRows
             rows={[
               ["Best validation accuracy", pct(baseline.bestValAccuracy)],
@@ -312,16 +298,16 @@ function BeforeOptimization() {
             ]}
           />
           <p className="footnote">
-            About 5× the 10% random-guess floor — and 99.7% of those parameters sit in the very first layer, between the
+            About 5× the 10% random-guess floor, and 99.7% of those parameters sit in the very first layer, between the
             3,072 inputs and the 512 hidden units.
           </p>
         </article>
         <div className="table-card flush">
-          <div className="table-title"><h2><Dot tone="purple" />Why these hyperparameters</h2></div>
+          <div className="table-title"><h2>Why these hyperparameters</h2></div>
           <div className="qa-list">
             {baselineChoices.map((choice) => (
               <article key={choice.setting}>
-                <h3><Dot tone="purple" />{choice.setting}</h3>
+                <h3>{choice.setting}</h3>
                 <p>{choice.reason}</p>
               </article>
             ))}
@@ -329,7 +315,7 @@ function BeforeOptimization() {
         </div>
       </div>
 
-      <SectionHeading note="Parts 4–7 · same data, same seed, only depth changes">Three depths, one width</SectionHeading>
+      <SectionHeading note="Parts 4 to 7, same data and seed, only depth changes">Three depths, one width</SectionHeading>
       <div className="arch-grid">
         {architectures.map((arch) => (
           <article className={`arch-card${arch.selected ? " selected" : ""}`} key={arch.key}>
@@ -337,7 +323,7 @@ function BeforeOptimization() {
               <h3>{arch.name}</h3>
               <code>{arch.layers}</code>
             </header>
-            {arch.selected ? <span className="best-badge">Selected for Parts 8–16</span> : null}
+            {arch.selected ? <span className="best-badge">Selected for Parts 8 to 16</span> : null}
             <dl className="arch-stats">
               <div><dt>Best val accuracy</dt><dd>{pct(arch.bestValAccuracy)}</dd></div>
               <div><dt>Gap</dt><dd>{arch.gap.toFixed(4)}</dd></div>
@@ -349,15 +335,15 @@ function BeforeOptimization() {
         ))}
       </div>
       <p className="footnote">
-        Gap here is <code>{GAP_PEAK}</code>, the definition Parts 4–7 report. The regularization experiments in tab 02
+        Gap here is <code>{GAP_PEAK}</code>, the definition Parts 4 to 7 report. The regularization experiments in tab 02
         use a different one, and it is labelled there.
       </p>
 
       <div className="chart-grid">
-        <ChartCard title="Validation accuracy by depth" note="50 epochs · Results/*.json">
+        <ChartCard title="Validation accuracy by depth" note="50 epochs, from Results/*.json">
           <LineChart lines={archLines("valAcc")} yFormat={(v) => `${(v * 100).toFixed(0)}%`} caption="Validation accuracy per epoch for the shallow, medium and deep networks. All three plateau near 52%." />
         </ChartCard>
-        <ChartCard title="Validation loss by depth" note="lower is better — and only shallow stays down">
+        <ChartCard title="Validation loss by depth" note="lower is better, and only shallow stays down">
           <LineChart lines={archLines("valLoss")} caption="Validation loss per epoch. Shallow stays flat, medium rises after epoch 13, deep rises hardest after epoch 12." />
         </ChartCard>
       </div>
@@ -369,8 +355,8 @@ function BeforeOptimization() {
 
       <SectionHeading note="Part 8">The diagnosis</SectionHeading>
       <div className="two-col">
-        <article className="soft-card">
-          <h2><Dot tone="red" />{diagnosis.verdict}</h2>
+        <article className="soft-card card-bad">
+          <h2>{diagnosis.verdict}</h2>
           <p className="diagnosis-model">{diagnosis.model}</p>
           <ol className="evidence-list">
             {diagnosis.evidence.map((line) => <li key={line}>{line}</li>)}
@@ -391,7 +377,7 @@ function BeforeOptimization() {
       </div>
 
       <div className="chart-grid">
-        <ChartCard title="Medium — training against validation accuracy" note="the two curves separate and never rejoin">
+        <ChartCard title="Medium: training against validation accuracy" note="the two curves separate and never rejoin">
           <LineChart
             lines={[
               { label: "Training accuracy", values: medium.acc, color: SERIES_COLORS[0] },
@@ -401,7 +387,7 @@ function BeforeOptimization() {
             caption="Training accuracy climbs to 82% while validation accuracy flattens near 52%."
           />
         </ChartCard>
-        <ChartCard title="Medium — training against validation loss" note="validation loss bottoms at epoch 13, then reverses">
+        <ChartCard title="Medium: training against validation loss" note="validation loss bottoms at epoch 13, then reverses">
           <LineChart
             lines={[
               { label: "Training loss", values: medium.loss, color: SERIES_COLORS[0] },
@@ -429,22 +415,22 @@ function AfterOptimization() {
   return (
     <section className="view">
       <PageHeading
-        eyebrow="Parts 9–16 · optimization and the sealed test set"
+        eyebrow="Parts 9 to 16 · optimization and the sealed test set"
         title="After optimization"
         subtitle="Eight controlled experiments, one variable at a time: learning rate, batch size, optimizer, three regularizers, batch normalization and an L2 ablation. Then the test set was opened, exactly once."
       />
 
       <div className="metric-grid">
-        <Metric value={pct(bestTuningRun.bestVal)} label={`best validation accuracy of any tuning run — LR ${bestTuningRun.value}`} tone="purple" />
-        <Metric value={pct(testResults.accuracy)} label={`final test accuracy · ${testResults.size.toLocaleString()} sealed images`} best />
-        <Metric value={pct(bestGapRun.gap)} label={`smallest generalization gap — ${bestGapRun.name}, down from ${pct(regularizationRuns[0].gap)}`} tone="orange" />
-        <Metric value={pct(bestAugmentation.bestVal)} label={`best score recorded anywhere — ${bestAugmentation.name.toLowerCase()} augmentation`} tone="aqua" />
+        <Metric value={pct(bestTuningRun.bestVal)} label={`best validation accuracy of any tuning run, at LR ${bestTuningRun.value}`} />
+        <Metric value={pct(testResults.accuracy)} label={`final test accuracy on ${testResults.size.toLocaleString()} sealed images`} best />
+        <Metric value={pct(bestGapRun.gap)} label={`smallest generalization gap, from ${bestGapRun.name}, down from ${pct(regularizationRuns[0].gap)}`} />
+        <Metric value={pct(bestAugmentation.bestVal)} label={`best score recorded anywhere, with ${bestAugmentation.name.toLowerCase()} augmentation`} />
       </div>
 
-      <SectionHeading note="Part 9 · everything else held fixed">Learning rate</SectionHeading>
+      <SectionHeading note="Part 9, everything else held fixed">Learning rate</SectionHeading>
       <div className="two-col">
         <div className="table-card flush">
-          <div className="table-title"><h2><Dot />Three rates, 50 epochs each</h2><span>best validation accuracy</span></div>
+          <div className="table-title"><h2>Three rates, 50 epochs each</h2><span>best validation accuracy</span></div>
           <RunList
             max={0.55}
             runs={learningRateRuns.map((run) => ({
@@ -457,7 +443,7 @@ function AfterOptimization() {
           />
         </div>
         <article className="soft-card">
-          <h2><Dot tone="orange" />What the curves show</h2>
+          <h2>What the curves show</h2>
           <p>{learningRateVerdict}</p>
           <p>
             0.0001 learns more slowly but more consistently, reaching its best validation accuracy at epoch 22 and
@@ -474,10 +460,10 @@ function AfterOptimization() {
         </ChartCard>
       </div>
 
-      <SectionHeading note="Part 10 · at the selected learning rate">Batch size</SectionHeading>
+      <SectionHeading note="Part 10, at the selected learning rate">Batch size</SectionHeading>
       <div className="two-col">
         <div className="table-card flush">
-          <div className="table-title"><h2><Dot />Four batch sizes</h2><span>best validation accuracy</span></div>
+          <div className="table-title"><h2>Four batch sizes</h2><span>best validation accuracy</span></div>
           <RunList
             max={0.55}
             runs={batchSizeRuns.map((run) => ({
@@ -489,7 +475,7 @@ function AfterOptimization() {
           />
         </div>
         <article className="soft-card">
-          <h2><Dot tone="orange" />Larger was better, but barely</h2>
+          <h2>Larger was better, but barely</h2>
           <p>{batchSizeVerdict}</p>
         </article>
       </div>
@@ -505,7 +491,7 @@ function AfterOptimization() {
       <SectionHeading note="Part 11">Optimizer</SectionHeading>
       <div className="two-col">
         <div className="table-card flush">
-          <div className="table-title"><h2><Dot />Adam against SGD</h2><span>best validation accuracy</span></div>
+          <div className="table-title"><h2>Adam against SGD</h2><span>best validation accuracy</span></div>
           <RunList
             max={0.55}
             runs={optimizerRuns.map((run) => ({
@@ -517,23 +503,23 @@ function AfterOptimization() {
           />
         </div>
         <article className="soft-card">
-          <h2><Dot tone="orange" />Why the rates differ</h2>
+          <h2>Why the rates differ</h2>
           <p>{optimizerVerdict}</p>
         </article>
       </div>
       <div className="chart-grid">
-        <ChartCard title="Validation accuracy — Adam against SGD" note="Adam peaks at 29, SGD is still climbing at 49">
+        <ChartCard title="Validation accuracy: Adam against SGD" note="Adam peaks at 29, SGD is still climbing at 49">
           <LineChart lines={seriesFrom(curves.optimizer, "valAcc")} yFormat={(v) => `${(v * 100).toFixed(0)}%`} caption="Validation accuracy per epoch for Adam and SGD." />
         </ChartCard>
-        <ChartCard title="Validation loss — Adam against SGD" note="Adam overfits after its best epoch">
+        <ChartCard title="Validation loss: Adam against SGD" note="Adam overfits after its best epoch">
           <LineChart lines={seriesFrom(curves.optimizer, "valLoss")} caption="Validation loss per epoch for Adam and SGD." />
         </ChartCard>
       </div>
 
-      <SectionHeading note="Part 12 · three regularizers against an unregularized baseline">Regularization</SectionHeading>
+      <SectionHeading note="Part 12, three regularizers against an unregularized baseline">Regularization</SectionHeading>
       <div className="table-card">
         <div className="table-title">
-          <h2><Dot />Closing the gap</h2>
+          <h2>Closing the gap</h2>
           <span>gap = {GAP_FINAL}</span>
         </div>
         <div className="table-scroll">
@@ -570,14 +556,14 @@ function AfterOptimization() {
       </div>
       <Insight>{regularizationVerdict}</Insight>
 
-      <SectionHeading note="Part 13 · the same network, with and without">Batch Normalization</SectionHeading>
+      <SectionHeading note="Part 13, the same network with and without">Batch Normalization</SectionHeading>
       <div className="two-col">
         <article className="soft-card card-bad">
-          <h2><Dot tone="red" />It backfired</h2>
+          <h2>It backfired</h2>
           <p>{batchnormVerdict}</p>
         </article>
         <div className="table-card flush">
-          <div className="table-title"><h2><Dot tone="purple" />Side by side</h2><span>gap = {GAP_FINAL}</span></div>
+          <div className="table-title"><h2>Side by side</h2><span>gap = {GAP_FINAL}</span></div>
           <div className="setting-list">
             {batchnormRuns.map((run) => (
               <article key={run.name} className="cols-a">
@@ -589,23 +575,23 @@ function AfterOptimization() {
           </div>
         </div>
       </div>
-      <ChartCard title="Batch Normalization — training against validation accuracy" note="99.20% train, 40.70% validation">
+      <ChartCard title="Batch Normalization: training against validation accuracy" note="99.20% train, 40.70% validation">
         <LineChart
           lines={[
-            { label: "Without BN — training", values: curves.batchnorm["Without BatchNorm"].acc, color: SERIES_COLORS[0] },
-            { label: "Without BN — validation", values: curves.batchnorm["Without BatchNorm"].valAcc, color: SERIES_COLORS[0], dashed: true },
-            { label: "With BN — training", values: curves.batchnorm["With BatchNorm"].acc, color: SERIES_COLORS[3] },
-            { label: "With BN — validation", values: curves.batchnorm["With BatchNorm"].valAcc, color: SERIES_COLORS[3], dashed: true },
+            { label: "Without BN, training", values: curves.batchnorm["Without BatchNorm"].acc, color: SERIES_COLORS[0] },
+            { label: "Without BN, validation", values: curves.batchnorm["Without BatchNorm"].valAcc, color: SERIES_COLORS[0], dashed: true },
+            { label: "With BN, training", values: curves.batchnorm["With BatchNorm"].acc, color: SERIES_COLORS[3] },
+            { label: "With BN, validation", values: curves.batchnorm["With BatchNorm"].valAcc, color: SERIES_COLORS[3], dashed: true },
           ]}
           yFormat={(v) => `${(v * 100).toFixed(0)}%`}
           caption="With Batch Normalization training accuracy reaches 99.20% while validation accuracy falls to 40.70%."
         />
       </ChartCard>
 
-      <SectionHeading note="Part 14 · one variable removed, everything else identical">Dropout ablation</SectionHeading>
+      <SectionHeading note="Part 14, one variable removed, everything else identical">Dropout ablation</SectionHeading>
       <div className="two-col">
         <div className="table-card flush">
-          <div className="table-title"><h2><Dot />With and without Dropout</h2><span>gap = {GAP_FINAL}</span></div>
+          <div className="table-title"><h2>With and without Dropout</h2><span>gap = {GAP_FINAL}</span></div>
           <div className="setting-list">
             {ablationRuns.map((run) => (
               <article key={run.name} className="cols-b">
@@ -616,12 +602,12 @@ function AfterOptimization() {
             ))}
           </div>
         </div>
-        <article className="soft-card">
-          <h2><Dot tone="green" />It raises the peak and closes the gap</h2>
+        <article className="soft-card card-good">
+          <h2>It raises the peak and closes the gap</h2>
           <p>{ablationVerdict}</p>
         </article>
       </div>
-      <ChartCard title="Dropout ablation — validation accuracy" note="best val differs by 89 images out of 5,000">
+      <ChartCard title="Dropout ablation: validation accuracy" note="best val differs by 89 images out of 5,000">
         <LineChart lines={seriesFrom(curves.ablation, "valAcc")} yFormat={(v) => `${(v * 100).toFixed(0)}%`} caption="Validation accuracy per epoch with and without Dropout." />
       </ChartCard>
 
@@ -629,8 +615,8 @@ function AfterOptimization() {
       <div className="two-col">
         <div className="table-card flush">
           <div className="table-title">
-            <h2><Dot tone="green" />{finalModel.architecture}</h2>
-            <span>{finalModel.params.toLocaleString()} trainable · {finalModel.nonTrainable} non-trainable</span>
+            <h2>{finalModel.architecture}</h2>
+            <span>{finalModel.params.toLocaleString()} trainable, {finalModel.nonTrainable} non-trainable</span>
           </div>
           <div className="setting-list">
             {finalModel.settings.map((setting) => (
@@ -643,7 +629,7 @@ function AfterOptimization() {
           </div>
         </div>
         <div className="stack">
-          <ChartCard title="Final model — validation accuracy" note={finalModel.epochsRun < finalModel.epochsAllowed ? `stopped at epoch ${finalModel.epochsRun} of ${finalModel.epochsAllowed}` : `ran all ${finalModel.epochsAllowed} epochs — Early Stopping never fired`}>
+          <ChartCard title="Final model: validation accuracy" note={finalModel.epochsRun < finalModel.epochsAllowed ? `stopped at epoch ${finalModel.epochsRun} of ${finalModel.epochsAllowed}` : `ran all ${finalModel.epochsAllowed} epochs, Early Stopping never fired`}>
             <LineChart
               lines={[
                 { label: "Training accuracy", values: curves.finalModel["Final Model"].acc, color: SERIES_COLORS[0] },
@@ -656,16 +642,16 @@ function AfterOptimization() {
         </div>
       </div>
 
-      <SectionHeading note="Part 16 · the test set was opened exactly once">Final test results</SectionHeading>
+      <SectionHeading note="Part 16, the test set was opened exactly once">Final test results</SectionHeading>
       <div className="metric-grid">
         <Metric value={pct(testResults.accuracy)} label="test accuracy" best />
-        <Metric value={pct(testResults.f1)} label="weighted F1-score" tone="purple" />
-        <Metric value={testResults.loss.toFixed(4)} label="test loss" tone="orange" />
-        <Metric value={testResults.size.toLocaleString()} label="test images, never seen during any decision" tone="aqua" />
+        <Metric value={pct(testResults.f1)} label="weighted F1-score" />
+        <Metric value={testResults.loss.toFixed(4)} label="test loss" />
+        <Metric value={testResults.size.toLocaleString()} label="test images, never seen during any decision" />
       </div>
       <div className="table-card">
         <div className="table-title">
-          <h2><Dot />Per-class F1 on the test set</h2>
+          <h2>Per-class F1 on the test set</h2>
           <span>weighted precision {pct(testResults.precision)} · recall {pct(testResults.recall)}</span>
         </div>
         <RunList
@@ -682,24 +668,21 @@ function AfterOptimization() {
         />
       </div>
 
-      <SectionHeading note="Part 15, re-run · a 2×2 that was not in the original submission">Does Dropout belong in the final model?</SectionHeading>
+      <SectionHeading note="Part 15 re-run, a 2×2 that was not in the original submission">Does Dropout belong in the final model?</SectionHeading>
       <div className="rule-note">
-        <Dot tone="orange" />
-        <div>
-          <strong>The experiment that decided which regularizer the final model ships.</strong>
-          <p>
-            Part 12 measured four regularizers and Dropout won on every metric it reported, but the first version of
-            Part 15 shipped L2 and left Dropout out entirely. This re-run crosses Dropout on/off with L2 on/off,
-            everything else identical, to settle it — and its recommendation was adopted, so Part 15 now ships
-            Dropout 0.3 + Early Stopping.
-          </p>
-        </div>
+        <strong>The experiment that decided which regularizer the final model ships.</strong>
+        <p>
+          Part 12 measured four regularizers and Dropout won on every metric it reported, but the first version of
+          Part 15 shipped L2 and left Dropout out entirely. This re-run crosses Dropout on/off with L2 on/off,
+          everything else identical, to settle it. Its recommendation was adopted, so Part 15 now ships
+          Dropout 0.3 plus Early Stopping.
+        </p>
       </div>
 
       <div className="table-card">
         <div className="table-title">
-          <h2><Dot tone="purple" />Four configurations, one variable at a time</h2>
-          <span>{rerunProtocol.shared}</span>
+          <h2>Four configurations, one variable at a time</h2>
+          <span>all four share the setup listed below the table</span>
         </div>
         <div className="table-scroll">
           <table className="log-table">
@@ -717,8 +700,8 @@ function AfterOptimization() {
                     {run.shipped ? <em className="tag tag-shipped">shipped</em> : null}
                     {run.winner ? <em className="tag tag-top">highest val</em> : null}
                   </td>
-                  <td>{run.dropout ?? "—"}</td>
-                  <td>{run.l2 ?? "—"}</td>
+                  <td>{run.dropout ?? "off"}</td>
+                  <td>{run.l2 ?? "off"}</td>
                   <td>{run.epochsRun}</td>
                   <td>{pct(run.bestVal)}</td>
                   <td>{run.bestValEpoch}</td>
@@ -731,9 +714,10 @@ function AfterOptimization() {
           </table>
         </div>
       </div>
+      <p className="footnote"><strong>Shared setup:</strong> {rerunProtocol.shared}</p>
       <p className="footnote">
         <strong>Highest val and shipped are deliberately different rows.</strong> Dropout + L2 scores highest, but
-        its lead over Dropout alone is 0.74 points — one standard error — and Parts 4–7 already rejected extra depth on
+        its lead over Dropout alone is 0.74 points, one standard error, and Parts 4 to 7 already rejected extra depth on
         exactly that reasoning. Applying the project&rsquo;s own significance rule consistently means taking the simpler
         model. Every run early-stopped rather than hitting the 100-epoch cap, so all four are converged and the
         comparison is not truncated. Gap is <code>{GAP_PEAK}</code>. {rerunProtocol.testDiscipline}
@@ -741,24 +725,22 @@ function AfterOptimization() {
 
       <div className="two-col">
         <div className="table-card flush">
-          <div className="table-title"><h2><Dot />Reading the 2×2, one contrast at a time</h2><span>validation points · 1 s.e. ≈ 0.7</span></div>
+          <div className="table-title"><h2>Reading the 2×2, one contrast at a time</h2><span>validation points, 1 s.e. is about 0.7</span></div>
           <div className="qa-list">
             {rerunContrasts.map((contrast) => (
-              <article key={contrast.question}>
-                <h3>
-                  <Dot tone={contrast.verdict === "yes" ? "green" : "red"} />
-                  {contrast.question}
-                </h3>
+              <article key={contrast.question} className={contrast.verdict === "yes" ? "verdict-yes" : "verdict-no"}>
+                <h3>{contrast.question}</h3>
                 <p>
                   <strong>{contrast.pair}: {contrast.points > 0 ? "+" : ""}{contrast.points.toFixed(2)} pts
-                  {" "}({contrast.images > 0 ? "+" : ""}{contrast.images} images)</strong> — {contrast.note}
+                  {" "}({contrast.images > 0 ? "+" : ""}{contrast.images} images).</strong>{" "}
+                  {contrast.note}
                 </p>
               </article>
             ))}
           </div>
         </div>
         <div className="stack">
-          <ChartCard title="Validation accuracy — the four configurations" note="the two Dropout runs separate from the two without it">
+          <ChartCard title="Validation accuracy across the four configurations" note="the two Dropout runs separate from the two without it">
             <LineChart lines={seriesFrom(curves.part15Rerun, "valAcc")} yFormat={(v) => `${(v * 100).toFixed(0)}%`} caption="Validation accuracy per epoch for L2 only, Dropout only, Dropout + L2 and the Early Stopping control." />
           </ChartCard>
           <article className="soft-card card-good">
@@ -770,7 +752,7 @@ function AfterOptimization() {
 
       <div className="two-col">
         <article className="soft-card">
-          <h2><Dot tone="green" />Why Dropout works here</h2>
+          <h2>Why Dropout works here</h2>
           <p>{rerunVerdict.mechanism}</p>
         </article>
         <article className="soft-card card-warn">
@@ -785,9 +767,9 @@ function AfterOptimization() {
       </div>
       <Insight tone="green">{rerunVerdict.headline} {rerunVerdict.honest}</Insight>
 
-      <SectionHeading note={`Extra experiment · ${augmentationEpochs} epochs, augmentation applied before Flatten`}>Data augmentation</SectionHeading>
+      <SectionHeading note={`Extra experiment, ${augmentationEpochs} epochs, augmentation applied before Flatten`}>Data augmentation</SectionHeading>
       <div className="table-card">
-        <div className="table-title"><h2><Dot tone="green" />More spatial variety, zero extra parameters</h2><span>against a no-augmentation control</span></div>
+        <div className="table-title"><h2>More spatial variety, zero extra parameters</h2><span>against a no-augmentation control</span></div>
         <div className="table-scroll">
           <table className="log-table">
             <thead>
@@ -815,8 +797,8 @@ function AfterOptimization() {
       </div>
       <p className="footnote">{augmentationVerdict}</p>
       <Insight tone="green">
-        +6.28 points and the gap nearly closed, from 0.4085 to 0.0791 — the strongest single result in the project. A
-        flipped car is still a car, but to a Dense network it is an entirely different 3,072-value vector.
+        +6.28 points and the gap nearly closed, from 0.4085 to 0.0791. This is the strongest single result in the
+        project. A flipped car is still a car, but to a Dense network it is an entirely different 3,072-value vector.
       </Insight>
     </section>
   );
@@ -834,7 +816,7 @@ function useConfusionPairs() {
           a,
           b,
           total: confusionMatrix[a][b] + confusionMatrix[b][a],
-          detail: `${confusionMatrix[a][b]} ${classNames[a]}→${classNames[b]} · ${confusionMatrix[b][a]} ${classNames[b]}→${classNames[a]}`,
+          detail: `${confusionMatrix[a][b]} ${classNames[a]} read as ${classNames[b]} · ${confusionMatrix[b][a]} ${classNames[b]} read as ${classNames[a]}`,
         });
       }
     }
@@ -874,7 +856,7 @@ function ConfusionMatrix() {
                     key={classNames[j]}
                     className={correct ? "diagonal" : undefined}
                     style={{
-                      background: correct ? `rgba(27, 175, 122, ${alpha})` : `rgba(82, 44, 186, ${alpha})`,
+                      background: correct ? `rgba(16, 121, 79, ${alpha})` : `rgba(74, 39, 176, ${alpha})`,
                       color: alpha > 0.45 ? "white" : "var(--ink)",
                     }}
                   >
@@ -899,34 +881,34 @@ function Insights({ navigate }: { navigate: (view: ViewId) => void }) {
   return (
     <section className="view">
       <PageHeading
-        eyebrow="Parts 17–19 · error analysis, tracking and conclusion"
+        eyebrow="Parts 17 to 19 · error analysis, tracking and conclusion"
         title="Insights & reflection"
-        subtitle="Where the model fails is not random. The errors concentrate between classes that differ by shape and local texture — exactly the information flattening throws away."
+        subtitle="Where the model fails is not random. The errors concentrate between classes that differ by shape and local texture, which is exactly the information flattening throws away."
       />
 
       <div className="metric-grid">
-        <Metric value={`${pairs[0].total}`} label={`errors between ${classNames[pairs[0].a]} and ${classNames[pairs[0].b]} — the largest pair in the matrix`} tone="red" />
-        <Metric value={pct(easiest[0].f1)} label={`best class F1 — ${easiest[0].name}`} best />
-        <Metric value={pct(hardest[0].f1)} label={`worst class F1 — ${hardest[0].name}`} tone="orange" />
-        <Metric value={`${experimentLog.length}`} label="tracked experiments across the whole project" tone="purple" />
+        <Metric value={`${pairs[0].total}`} label={`errors between ${classNames[pairs[0].a]} and ${classNames[pairs[0].b]}, the largest pair in the matrix`} />
+        <Metric value={pct(easiest[0].f1)} label={`best class F1, from ${easiest[0].name}`} best />
+        <Metric value={pct(hardest[0].f1)} label={`worst class F1, from ${hardest[0].name}`} />
+        <Metric value={`${experimentLog.length}`} label="tracked experiments across the whole project" />
       </div>
 
       <SectionHeading note="Part 17">Where it fails</SectionHeading>
       <div className="table-card">
         <div className="table-title">
-          <h2><Dot tone="red" />Confusion matrix</h2>
-          <span>final model · {testResults.size.toLocaleString()} test images</span>
+          <h2>Confusion matrix</h2>
+          <span>final model, {testResults.size.toLocaleString()} test images</span>
         </div>
         <ConfusionMatrix />
       </div>
 
       <div className="two-col">
         <div className="table-card flush">
-          <div className="table-title"><h2><Dot tone="orange" />Largest confusion pairs</h2><span>both directions summed</span></div>
+          <div className="table-title"><h2>Largest confusion pairs</h2><span>both directions summed</span></div>
           <div className="run-list">
             {pairs.map((pair) => (
               <div className="run-row" key={`${pair.a}-${pair.b}`}>
-                <span>{classNames[pair.a]} ↔ {classNames[pair.b]}</span>
+                <span>{classNames[pair.a]} and {classNames[pair.b]}</span>
                 <div className="mini-track" role="img" aria-label={`${classNames[pair.a]} and ${classNames[pair.b]}: ${pair.total} errors`}>
                   <i className="fill-bad" style={{ width: `${Math.max(2, (pair.total / pairs[0].total) * 100)}%` }} />
                 </div>
@@ -937,12 +919,12 @@ function Insights({ navigate }: { navigate: (view: ViewId) => void }) {
           </div>
         </div>
         <div className="stack">
-          <article className="soft-card">
-            <h2><Dot tone="green" />Easiest classes</h2>
+          <article className="soft-card card-good">
+            <h2>Easiest classes</h2>
             <StatRows rows={easiest.map((c) => [c.name, `${pct(c.f1)} F1`] as const)} />
           </article>
-          <article className="soft-card">
-            <h2><Dot tone="red" />Hardest classes</h2>
+          <article className="soft-card card-bad">
+            <h2>Hardest classes</h2>
             <StatRows rows={hardest.map((c) => [c.name, `${pct(c.f1)} F1`] as const)} />
           </article>
           <article className="soft-card card-warn">
@@ -970,11 +952,11 @@ function Insights({ navigate }: { navigate: (view: ViewId) => void }) {
         The constraint in the brief mattered more to the final number than any hyperparameter chosen after it.
       </Insight>
 
-      <SectionHeading note="Part 18 · every run, one row each">Experiment log</SectionHeading>
+      <SectionHeading note="Part 18, every run, one row each">Experiment log</SectionHeading>
       <div className="table-card">
         <div className="table-title">
-          <h2><Dot />Tracked experiments</h2>
-          <span>best validation accuracy · a dash means the setting was not varied in that run</span>
+          <h2>Tracked experiments</h2>
+          <span>best validation accuracy, a dash means the setting was not varied in that run</span>
         </div>
         <div className="table-scroll">
           <table className="log-table">
@@ -1000,22 +982,22 @@ function Insights({ navigate }: { navigate: (view: ViewId) => void }) {
         </div>
       </div>
       <p className="footnote">
-        Thirteen tracked runs span 44.64% to 54.62% — 9.98 points, and the bottom of that range is the run with the
-        highest training accuracy in the entire project.
+        Thirteen tracked runs span 44.64% to 54.62%, a range of 9.98 points, and the bottom of that range is the run
+        with the highest training accuracy in the entire project.
       </p>
 
       <SectionHeading note="Found after submission, then adopted">The regularizer decision, revisited</SectionHeading>
       <div className="two-col">
         <article className="soft-card card-good">
-          <h2><Dot tone="green" />Part 15 now ships the regularizer the evidence backs</h2>
+          <h2>Part 15 now ships the regularizer the evidence backs</h2>
           <p>
             Part 12 ranked Dropout first on every metric it measured, but the first version of the final model used L2
             and no Dropout.
           </p>
           <p>
-            A 2×2 re-run — Dropout on/off crossed with L2 on/off, everything else held — showed L2 contributes nothing
-            measurable either alone (+0.40 pts) or on top of Dropout (+0.74 pts). That finding was adopted: Part 14 is
-            now a Dropout ablation and the final model is <strong>Dropout 0.3 + Early Stopping</strong>.
+            A 2×2 re-run, Dropout on/off crossed with L2 on/off with everything else held, showed L2 contributes
+            nothing measurable either alone (+0.40 pts) or on top of Dropout (+0.74 pts). That finding was adopted:
+            Part 14 is now a Dropout ablation and the final model is <strong>Dropout 0.3 plus Early Stopping</strong>.
           </p>
           <button className="link-button" onClick={() => navigate("after")}>
             See the full 2×2 on tab 02 →
@@ -1034,14 +1016,14 @@ function Insights({ navigate }: { navigate: (view: ViewId) => void }) {
             <h3>What it changed</h3>
             <p>
               Part 16 now reports {pct(testResults.accuracy)} for the Dropout model, against 52.94% for the L2 model
-              built first. Adding L2 back on top would be worth 0.74 points — one standard error — so the simpler
+              built first. Adding L2 back on top would be worth 0.74 points, one standard error, so the simpler
               model stands.
             </p>
           </article>
         </div>
       </div>
 
-      <SectionHeading note="Part 19 · reflection">What we took away</SectionHeading>
+      <SectionHeading note="Part 19, reflection">What we took away</SectionHeading>
       <div className="reflection-grid">
         {reflection.map((item) => (
           <article key={item.label}>
@@ -1062,6 +1044,7 @@ function Insights({ navigate }: { navigate: (view: ViewId) => void }) {
 
 function Deployment() {
   const [selectedSample, setSelectedSample] = useState(0);
+  const sample = mobilenetSamples[selectedSample];
 
   return (
     <section className="view">
@@ -1077,7 +1060,7 @@ function Deployment() {
           <h2>{deploymentCard.what}</h2>
           <p>
             Early Stopping restored the weights from the best epoch, so the shipped model is the one that scored best on
-            validation — not the one that had trained longest.
+            validation, not the one that had trained longest.
           </p>
           <div className="contract">
             <div>
@@ -1091,9 +1074,9 @@ function Deployment() {
           </div>
         </article>
         <div className="stack stack-tight">
-          <Metric value={deploymentCard.params.toLocaleString()} label="trainable parameters" tone="purple" />
-          <Metric value={`${deploymentCard.sizeMB} MB`} label="model weights, float32" tone="aqua" />
-          <Metric value={pct(deploymentCard.accuracy)} label="test accuracy — the number any deployment decision must start from" tone="orange" />
+          <Metric value={deploymentCard.params.toLocaleString()} label="trainable parameters" />
+          <Metric value={`${deploymentCard.sizeMB} MB`} label="model weights, float32" />
+          <Metric value={pct(deploymentCard.accuracy)} label="test accuracy, the number any deployment decision must start from" />
         </div>
       </div>
 
@@ -1113,26 +1096,26 @@ function Deployment() {
         and still wrong about half the time. That is a demonstration, not a product.
       </Insight>
 
-      <SectionHeading note="Part 20 · the four questions">What flattening costs</SectionHeading>
+      <SectionHeading note="Part 20, the four questions">What flattening costs</SectionHeading>
       <div className="flow">
         <div>
           <span>The image</span>
           <strong>32 × 32 × 3</strong>
-          <small>height, width and three colour channels — structure intact</small>
+          <small>height, width and three colour channels, structure intact</small>
         </div>
         <div className="arrow" aria-hidden="true">→</div>
         <div>
           <span>After Flatten</span>
           <strong>3,072 × 1</strong>
-          <small>every value survives; the arrangement does not</small>
+          <small>every value survives, the arrangement does not</small>
         </div>
       </div>
       <div className="table-card">
-        <div className="table-title"><h2><Dot tone="purple" />The reflection questions</h2></div>
+        <div className="table-title"><h2>The reflection questions</h2></div>
         <div className="qa-list">
           {flatteningCosts.map((item) => (
             <article key={item.question}>
-              <h3><Dot tone="purple" />{item.question}</h3>
+              <h3>{item.question}</h3>
               <p>{item.answer}</p>
             </article>
           ))}
@@ -1142,7 +1125,7 @@ function Deployment() {
       <SectionHeading note="Dense against convolutional">The comparison</SectionHeading>
       <div className="table-card">
         <div className="table-title">
-          <h2><Dot />What a CNN gives back</h2>
+          <h2>What a CNN gives back</h2>
           <span>the right column is what this project was not allowed to use</span>
         </div>
         <div className="table-scroll">
@@ -1155,8 +1138,8 @@ function Deployment() {
             <thead>
               <tr>
                 <th scope="col">Aspect</th>
-                <th scope="col">Dense network — what we built</th>
-                <th scope="col">Convolutional network — what comes next</th>
+                <th scope="col">Dense network: what we built</th>
+                <th scope="col">Convolutional network: what comes next</th>
               </tr>
             </thead>
             <tbody>
@@ -1172,23 +1155,27 @@ function Deployment() {
         </div>
       </div>
 
-      <SectionHeading note="Empirical benchmark · high-performance fine-tuning">MobileNetV2 CNN vs Shipped Dense</SectionHeading>
+      <SectionHeading note="Empirical benchmark, high-performance fine-tuning">MobileNetV2 CNN against the shipped Dense model</SectionHeading>
       <div className="deploy-hero">
         <article className="deploy-card">
           <h2>{mobilenetBenchmark.name}</h2>
           <p>
-            Trained on the same committed CIFAR-10 split in 6 epochs (2 warmup + 4 fine-tuning on laptop CPU) with data augmentation, label smoothing, and cosine decay scheduling.
+            Trained on the same committed CIFAR-10 split in 6 epochs (2 warmup plus 4 fine-tuning on laptop CPU) with
+            data augmentation, label smoothing, and cosine decay scheduling.
           </p>
           <div className="contract">
             <div>
               <span>Test accuracy gain</span>
-              <p>+{mobilenetBenchmark.gainPoints}% percentage points over Dense baseline ({pct(deploymentCard.accuracy)} → {pct(mobilenetBenchmark.testAccuracy)})</p>
+              <p>
+                +{mobilenetBenchmark.gainPoints} percentage points over the Dense baseline, {pct(deploymentCard.accuracy)} up
+                to {pct(mobilenetBenchmark.testAccuracy)}
+              </p>
             </div>
             <div>
-              <span>Live Public Inference Demo</span>
+              <span>Live public inference demo</span>
               <p>
-                <a href={mobilenetBenchmark.publicLiveUrl} target="_blank" rel="noreferrer" style={{ color: "#818cf8", fontWeight: 600, textDecoration: "underline" }}>
-                  Open Live Gradio Web App ↗
+                <a href={mobilenetBenchmark.publicLiveUrl} target="_blank" rel="noreferrer">
+                  Open the live Gradio web app ↗
                 </a>
                 {" · "}
                 <code>{mobilenetBenchmark.gradioAppCommand}</code>
@@ -1197,71 +1184,54 @@ function Deployment() {
           </div>
         </article>
         <div className="stack stack-tight">
-          <Metric value={mobilenetBenchmark.params.toLocaleString()} label="trainable parameters" tone="green" />
-          <Metric value={`${mobilenetBenchmark.epochs} epochs`} label="training budget (CPU)" tone="aqua" />
-          <Metric value={pct(mobilenetBenchmark.testAccuracy)} label="test accuracy on 10k images" tone="orange" />
+          <Metric value={mobilenetBenchmark.params.toLocaleString()} label="trainable parameters" />
+          <Metric value={`${mobilenetBenchmark.epochs} epochs`} label="training budget on CPU" />
+          <Metric value={pct(mobilenetBenchmark.testAccuracy)} label="test accuracy on 10,000 images" best />
         </div>
       </div>
 
-      <SectionHeading note="Interactive Presentation · 10 CIFAR-10 Classes">Live sample comparison trial</SectionHeading>
+      <SectionHeading note="Interactive, all 10 CIFAR-10 classes">Live sample comparison</SectionHeading>
       <div className="table-card">
         <div className="table-title">
-          <h2><Dot tone="purple" />Select a sample class to compare model predictions</h2>
-          <span>Click any of the 10 CIFAR-10 classes below</span>
+          <h2>Pick a class to compare the two models</h2>
+          <span>ground truth on the left, both predictions on the right</span>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", padding: "1rem" }}>
-          {mobilenetSamples.map((sample, idx) => (
+        <div className="sample-picker">
+          {mobilenetSamples.map((item, idx) => (
             <button
-              key={sample.name}
+              key={item.name}
+              className={selectedSample === idx ? "active" : undefined}
+              aria-pressed={selectedSample === idx}
               onClick={() => setSelectedSample(idx)}
-              style={{
-                padding: "0.4rem 0.8rem",
-                borderRadius: "6px",
-                border: "1px solid",
-                borderColor: selectedSample === idx ? "#6366f1" : "rgba(255, 255, 255, 0.15)",
-                background: selectedSample === idx ? "rgba(99, 102, 241, 0.2)" : "rgba(255, 255, 255, 0.03)",
-                color: selectedSample === idx ? "#818cf8" : "inherit",
-                cursor: "pointer",
-                fontWeight: selectedSample === idx ? "600" : "400",
-                textTransform: "capitalize",
-              }}
             >
-              {sample.name}
+              {item.name}
             </button>
           ))}
         </div>
-
-        {(() => {
-          const s = mobilenetSamples[selectedSample];
-          return (
-            <div style={{ padding: "1rem", display: "grid", gridTemplateColumns: "100px 1fr 1fr", gap: "1.5rem", alignItems: "center" }}>
-              <div style={{ textAlign: "center" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={s.src} alt={s.name} style={{ width: "64px", height: "64px", imageRendering: "pixelated", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.2)" }} />
-                <small style={{ display: "block", marginTop: "4px", textTransform: "capitalize", opacity: 0.8 }}>Ground Truth: <b>{s.name}</b></small>
-              </div>
-
-              <div style={{ background: "rgba(239, 68, 68, 0.08)", padding: "0.75rem 1rem", borderRadius: "8px", borderLeft: "3px solid #ef4444" }}>
-                <span style={{ fontSize: "0.8rem", color: "#f87171", textTransform: "uppercase", fontWeight: 600 }}>Dense Model (Flattened)</span>
-                <p style={{ margin: "4px 0", fontSize: "1.05rem" }}>Predicted: <b>{s.densePred}</b> ({s.denseConf}%)</p>
-                <small style={{ opacity: 0.75 }}>Class F1: {s.denseF1}</small>
-              </div>
-
-              <div style={{ background: "rgba(34, 197, 94, 0.08)", padding: "0.75rem 1rem", borderRadius: "8px", borderLeft: "3px solid #22c55e" }}>
-                <span style={{ fontSize: "0.8rem", color: "#4ade80", textTransform: "uppercase", fontWeight: 600 }}>MobileNetV2 CNN (Spatial)</span>
-                <p style={{ margin: "4px 0", fontSize: "1.05rem" }}>Predicted: <b>{s.cnnPred}</b> ({s.cnnConf}%)</p>
-                <small style={{ opacity: 0.75 }}>{s.notes}</small>
-              </div>
-            </div>
-          );
-        })()}
+        <div className="sample-compare">
+          <div className="sample-truth">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={sample.src} alt={sample.name} />
+            <small>Ground truth: <b>{sample.name}</b></small>
+          </div>
+          <div className="sample-side dense">
+            <span>Dense model, flattened</span>
+            <p>Predicted: <b>{sample.densePred}</b> at {sample.denseConf}%</p>
+            <small>Class F1: {sample.denseF1}</small>
+          </div>
+          <div className="sample-side cnn">
+            <span>MobileNetV2 CNN, spatial</span>
+            <p>Predicted: <b>{sample.cnnPred}</b> at {sample.cnnConf}%</p>
+            <small>{sample.notes}</small>
+          </div>
+        </div>
       </div>
 
       <SectionHeading note="From this project's own measurements">Why we know the ceiling is architectural</SectionHeading>
       <div className="evidence-grid">
         {cnnEvidence.map((item) => (
           <article key={item.label}>
-            <h3><Dot tone="green" />{item.label}</h3>
+            <h3>{item.label}</h3>
             <p>{item.detail}</p>
           </article>
         ))}
@@ -1306,24 +1276,20 @@ export default function CifarDenseApp({ initialView = "before" }: { initialView?
             <span>DNN</span>
             <div>
               <strong>CIFAR-10, Dense Only</strong>
-              <small>Deep Learning Capstone</small>
+              <small>Deep Learning Capstone · {project.team.join(" and ")}</small>
             </div>
           </button>
-          <p className="brand-meta">
-            <b>{project.team.join(" · ")}</b>
-            {project.course} · {project.org}
-          </p>
         </div>
         <nav className="tabs" aria-label="Project sections">
-          {navItems.map(([id, number, label, parts]) => (
+          {navItems.map(([id, , label, parts]) => (
             <button
               key={id}
               className={view === id ? "active" : ""}
               aria-current={view === id ? "page" : undefined}
               onClick={() => setView(id)}
             >
-              <span>{number}</span>
-              <div><b>{label}</b><small>{parts}</small></div>
+              <b>{label}</b>
+              <small>{parts}</small>
             </button>
           ))}
         </nav>

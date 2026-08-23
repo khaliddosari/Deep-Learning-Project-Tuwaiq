@@ -14,13 +14,13 @@
 //   GAP_PEAK  = final train accuracy - BEST validation accuracy  (Parts 4-7, 19)
 //   GAP_FINAL = final train accuracy - FINAL validation accuracy (Parts 12-14)
 
-export const GAP_PEAK = "final train accuracy − best validation accuracy";
-export const GAP_FINAL = "final train accuracy − final-epoch validation accuracy";
+export const GAP_PEAK = "final train accuracy minus best validation accuracy";
+export const GAP_FINAL = "final train accuracy minus final-epoch validation accuracy";
 
 export const navItems = [
-  ["before", "01", "Before Optimization", "Parts 1–8"],
-  ["after", "02", "After Optimization", "Parts 9–16"],
-  ["insights", "03", "Insights & Reflection", "Parts 17–19"],
+  ["before", "01", "Before Optimization", "Parts 1 to 8"],
+  ["after", "02", "After Optimization", "Parts 9 to 16"],
+  ["insights", "03", "Insights & Reflection", "Parts 17 to 19"],
   ["deployment", "04", "Deployment & CNN", "Part 20"],
 ] as const;
 
@@ -65,7 +65,7 @@ export const baselineChoices = [
   {
     setting: "512 neurons",
     reason:
-      "Chosen by testing. At 32 units the model stalled at 19% accuracy with 31 of 32 hidden units dead — ReLU had collapsed the layer to a single effective neuron. 512 keeps the first hidden layer wide enough that it compresses the 3,072-value input only six-fold.",
+      "Chosen by testing. At 32 units the model stalled at 19% accuracy with 31 of 32 hidden units dead. ReLU had collapsed the layer to a single effective neuron. 512 keeps the first hidden layer wide enough that it compresses the 3,072-value input only six-fold.",
   },
   {
     setting: "Learning rate 0.0001",
@@ -80,7 +80,7 @@ export const baselineChoices = [
   {
     setting: "50 epochs",
     reason:
-      "Validation loss reaches its minimum near epoch 42. Extending to 100 epochs gained 0.4 points of validation accuracy while training accuracy gained 1.1 — memorisation, not learning.",
+      "Validation loss reaches its minimum near epoch 42. Extending to 100 epochs gained 0.4 points of validation accuracy while training accuracy gained 1.1. That is memorisation, not learning.",
   },
 ];
 
@@ -98,7 +98,7 @@ export type Architecture = {
   minValLossEpoch: number;
   finalTrainAccuracy: number;
   finalValLoss: number;
-  /** GAP_PEAK — the definition Parts 4-7 and Part 19 report. */
+  /** GAP_PEAK, the definition Parts 4-7 and Part 19 report. */
   gap: number;
   verdict: string;
   selected?: boolean;
@@ -111,7 +111,7 @@ export const architectures: Architecture[] = [
     minValLoss: 1.3877, minValLossEpoch: 42, finalTrainAccuracy: 0.6746,
     finalValLoss: 1.3896, gap: 0.1524,
     verdict:
-      "Underfitting. Validation loss never meaningfully rises — it ends at 1.3896 against a minimum of 1.3877. Not memorising, just too small.",
+      "Underfitting. Validation loss never meaningfully rises: it ends at 1.3896 against a minimum of 1.3877. Not memorising, just too small.",
   },
   {
     key: "medium", name: "Medium", layers: "3 × 512", hiddenLayers: 3,
@@ -128,7 +128,7 @@ export const architectures: Architecture[] = [
     minValLoss: 1.3968, minValLossEpoch: 12, finalTrainAccuracy: 0.8597,
     finalValLoss: 2.4324, gap: 0.3299,
     verdict:
-      "Strongest overfitting. Validation loss bottoms at epoch 12 then rises 74% to 2.4324 — the largest rise of the three — despite the highest training accuracy.",
+      "Strongest overfitting. Validation loss bottoms at epoch 12 then rises 74% to 2.4324, the largest rise of the three, despite the highest training accuracy.",
   },
 ];
 
@@ -143,7 +143,7 @@ export const architectureSpread = {
 // ---------------------------------------------------------------- Part 8
 
 export const diagnosis = {
-  model: "Medium — 3 hidden layers of 512 neurons, 2,103,818 parameters",
+  model: "Medium: 3 hidden layers of 512 neurons, 2,103,818 parameters",
   verdict: "Overfitting, beginning around epoch 13",
   evidence: [
     "Validation loss reaches its minimum of 1.4024 at epoch 13 and rises steadily afterwards: 1.402, 1.412, 1.522, 1.655, 1.784.",
@@ -185,7 +185,7 @@ export const batchSizeRuns = [
 ];
 
 export const batchSizeVerdict =
-  "Accuracy improved at every step, but the gain from 64 to 128 is only 0.48 points — inside the noise of a 5,000-image validation set, so the advantage over 64 is not clearly established. The clear effect is on overfitting: batch 16 reached 94.27% training accuracy and a validation loss of 3.4169.";
+  "Accuracy improved at every step, but the gain from 64 to 128 is only 0.48 points, inside the noise of a 5,000-image validation set, so the advantage over 64 is not clearly established. The clear effect is on overfitting: batch 16 reached 94.27% training accuracy and a validation loss of 3.4169.";
 
 // ---------------------------------------------------------------- Part 11
 
@@ -195,7 +195,7 @@ export const optimizerRuns = [
 ];
 
 export const optimizerVerdict =
-  "The learning rates differ on purpose: Adam normalises its own step sizes, so matching them would cripple SGD. Adam wins on best accuracy, on minimum validation loss, and on speed — it peaks at epoch 31 while SGD is still climbing at epoch 50. SGD's lower final validation loss reflects how far Adam kept overfitting after its best epoch, not a better model.";
+  "The learning rates differ on purpose: Adam normalises its own step sizes, so matching them would cripple SGD. Adam wins on best accuracy, on minimum validation loss, and on speed: it peaks at epoch 31 while SGD is still climbing at epoch 50. SGD's lower final validation loss reflects how far Adam kept overfitting after its best epoch, not a better model.";
 
 // ---------------------------------------------------------------- Part 12
 
@@ -204,7 +204,7 @@ export type RegularizationRun = {
   detail: string;
   finalTrain: number;
   finalVal: number;
-  /** GAP_FINAL — the definition Parts 12-14 report. */
+  /** GAP_FINAL, the definition Parts 12-14 report. */
   gap: number;
   finalValLoss: number;
   bestVal: number;
@@ -230,7 +230,7 @@ export const batchnormRuns = [
 ];
 
 export const batchnormVerdict =
-  "It backfired. Batch Normalization drove training accuracy to 99.20% and validation accuracy down to 40.70% — a 58.50-point gap and a final validation loss of 4.4448. This is the clearest demonstration in the project that high training accuracy is not evidence of a good model, and it is why BatchNorm was excluded from the final build.";
+  "It backfired. Batch Normalization drove training accuracy to 99.20% and validation accuracy down to 40.70%, a 58.50-point gap and a final validation loss of 4.4448. This is the clearest demonstration in the project that high training accuracy is not evidence of a good model, and it is why BatchNorm was excluded from the final build.";
 
 // ---------------------------------------------------------------- Part 14
 
@@ -240,7 +240,7 @@ export const ablationRuns = [
 ];
 
 export const ablationVerdict =
-  "Dropout raises the peak and closes the gap at the same time. Final validation accuracy rises from 51.04% to 54.40% and the gap narrows from 30.76% to 4.74%, while best validation accuracy goes from 52.84% to 54.62% — 89 images out of 5,000. Both models were reseeded before being built, so they start from identical weights and Dropout is the only variable. This is the evidence that carries Dropout into the final model.";
+  "Dropout raises the peak and closes the gap at the same time. Final validation accuracy rises from 51.04% to 54.40% and the gap narrows from 30.76% to 4.74%, while best validation accuracy goes from 52.84% to 54.62%, which is 89 images out of 5,000. Both models were reseeded before being built, so they start from identical weights and Dropout is the only variable. This is the evidence that carries Dropout into the final model.";
 
 // ---------------------------------------------------------------- Part 15
 
@@ -252,13 +252,13 @@ export const finalModel = {
   epochsRun: 50,
   epochsAllowed: 50,
   settings: [
-    { name: "Optimizer", value: "Adam", why: "Part 11 — higher best accuracy, lower minimum loss, faster convergence" },
-    { name: "Learning rate", value: "0.0001", why: "Part 9 — 52.64% against 47.68% and 38.64%" },
-    { name: "Batch size", value: "128", why: "Part 10 — highest accuracy and lowest minimum validation loss of the four" },
-    { name: "Dropout", value: "0.3", why: "Parts 12 and 14 — ranked first of four regularizers, and the ablation confirms it in isolation" },
-    { name: "Early Stopping", value: "on validation loss", why: "Part 8 — recovers the best epoch instead of the last one" },
-    { name: "L2", value: "excluded", why: "Part 12 — left the generalization gap almost unchanged when tested on its own" },
-    { name: "Batch Normalization", value: "excluded", why: "Part 13 — dropped best validation accuracy from 53.18% to 44.64%" },
+    { name: "Optimizer", value: "Adam", why: "Part 11: higher best accuracy, lower minimum loss, faster convergence" },
+    { name: "Learning rate", value: "0.0001", why: "Part 9: 52.64% against 47.68% and 38.64%" },
+    { name: "Batch size", value: "128", why: "Part 10: highest accuracy and lowest minimum validation loss of the four" },
+    { name: "Dropout", value: "0.3", why: "Parts 12 and 14: ranked first of four regularizers, and the ablation confirms it in isolation" },
+    { name: "Early Stopping", value: "on validation loss", why: "Part 8: recovers the best epoch instead of the last one" },
+    { name: "L2", value: "excluded", why: "Part 12: left the generalization gap almost unchanged when tested on its own" },
+    { name: "Batch Normalization", value: "excluded", why: "Part 13: dropped best validation accuracy from 53.18% to 44.64%" },
   ],
 };
 
@@ -319,7 +319,7 @@ export const augmentationRuns = [
 export const augmentationEpochs = 100;
 
 export const augmentationVerdict =
-  "The strongest single result in the project, and it cost no parameters. Augmentation layers sit before Flatten, so they transform the image while it still has spatial structure, and they are active only during fit — validation and test are always measured on unmodified images.";
+  "The strongest single result in the project, and it cost no parameters. Augmentation layers sit before Flatten, so they transform the image while it still has spatial structure, and they are active only during fit, so validation and test are always measured on unmodified images.";
 
 // ---------------------------------------------------------------- Part 15, re-run
 
@@ -368,14 +368,14 @@ export const rerunRuns: RerunRun[] = [
 
 /** The 2x2 read one contrast at a time. Deltas are validation points. */
 export const rerunContrasts = [
-  { question: "Does L2 do anything on its own?", pair: "L2 only − control", points: 0.4, images: 20, verdict: "no" as const, note: "Inside the noise of a 5,000-image validation set, where one standard error is about 0.7 points." },
-  { question: "Does Dropout do anything on its own?", pair: "Dropout only − control", points: 2.2, images: 110, verdict: "yes" as const, note: "Three standard errors. This is the effect the whole comparison turns on." },
-  { question: "Does L2 add anything on top of Dropout?", pair: "Dropout + L2 − Dropout only", points: 0.74, images: 37, verdict: "no" as const, note: "One standard error. By the same standard Parts 4–7 used to reject extra depth, this is not a result." },
+  { question: "Does L2 do anything on its own?", pair: "L2 only vs control", points: 0.4, images: 20, verdict: "no" as const, note: "Inside the noise of a 5,000-image validation set, where one standard error is about 0.7 points." },
+  { question: "Does Dropout do anything on its own?", pair: "Dropout only vs control", points: 2.2, images: 110, verdict: "yes" as const, note: "Three standard errors. This is the effect the whole comparison turns on." },
+  { question: "Does L2 add anything on top of Dropout?", pair: "Dropout + L2 vs Dropout only", points: 0.74, images: 37, verdict: "no" as const, note: "One standard error. By the same standard Parts 4 to 7 used to reject extra depth, this is not a result." },
 ];
 
 export const rerunProtocol = {
-  shared: "[512, 512, 512] Dense · Adam @ 0.0001 · batch 128 · 100-epoch cap · EarlyStopping(val_loss, patience 5, restore_best_weights) · seed 42 reseeded before every build — Early Stopping fired in all four arms, so the cap never bound",
-  selectedOn: "best validation accuracy — the quantity restore_best_weights recovers",
+  shared: "[512, 512, 512] Dense · Adam @ 0.0001 · batch 128 · 100-epoch cap · EarlyStopping(val_loss, patience 5, restore_best_weights) · seed 42 reseeded before every build. Early Stopping fired in all four arms, so the cap never bound",
+  selectedOn: "best validation accuracy, the quantity restore_best_weights recovers",
   testDiscipline:
     "The winner was chosen on validation and that decision recorded before the test set was touched. No tuning followed. All four test scores are shown for transparency, not because they were used to choose.",
 };
@@ -387,15 +387,15 @@ export const reproducibilityNote = {
   rerunVal: 0.5366,
   rerunTest: 0.5351,
   why:
-    "cuDNN picks convolution and GEMM algorithms at runtime and XLA fuses kernels opportunistically; neither is controlled by the seed. Run-to-run drift is therefore about the same size as the differences Part 12 was ranking regularizers on — which is the strongest argument in the project for reading small gaps as noise.",
+    "cuDNN picks convolution and GEMM algorithms at runtime and XLA fuses kernels opportunistically; neither is controlled by the seed. Run-to-run drift is therefore about the same size as the differences Part 12 was ranking regularizers on, which is the strongest argument in the project for reading small gaps as noise.",
 };
 
 export const rerunVerdict = {
   headline: "Dropout is the entire effect. L2 is not measurable either alone or on top of it.",
   mechanism:
-    "Without Dropout, validation loss bottoms at epoch 15–16 and Early Stopping fires by epoch 20 — the model has stopped learning anything that generalises. With Dropout it keeps improving to epoch 44 and runs 46 epochs, and the generalization gap falls from 0.11–0.14 to 0.03–0.04.",
+    "Without Dropout, validation loss bottoms at epoch 15 or 16 and Early Stopping fires by epoch 20, so the model has stopped learning anything that generalises. With Dropout it keeps improving to epoch 44 and runs 46 epochs, and the generalization gap falls from the 0.11 to 0.14 band down to the 0.03 to 0.04 band.",
   recommendation:
-    "Ship Dropout 0.3 + Early Stopping — which is what Part 15 now does. Dropout + L2 scores 0.74 points higher, but that is one standard error, and Parts 4–7 already rejected extra depth on exactly that reasoning, so consistency says take the simpler model. It also has the lowest test loss of the four at 1.2941.",
+    "Ship Dropout 0.3 plus Early Stopping, which is what Part 15 now does. Dropout + L2 scores 0.74 points higher, but that is one standard error, and Parts 4 to 7 already rejected extra depth on exactly that reasoning, so consistency says take the simpler model. It also has the lowest test loss of the four at 1.2941.",
   honest:
     "The notebook adopted this. Part 14 is now a Dropout ablation and Part 15 builds Dropout 0.3 + Early Stopping, reaching 54.62% validation and 54.08% test. This 2×2 is the evidence behind that choice, not a correction still pending.",
 };
@@ -403,28 +403,28 @@ export const rerunVerdict = {
 // ---------------------------------------------------------------- Part 18
 
 export const experimentLog = [
-  { name: "Baseline", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "—", batchnorm: "—", l2: "—", earlyStop: "—", bestVal: 0.5196 },
-  { name: "Shallow", architecture: "Shallow (1×512)", lr: "—", batch: "—", optimizer: "—", dropout: "—", batchnorm: "—", l2: "—", earlyStop: "—", bestVal: 0.5222 },
-  { name: "Medium", architecture: "Medium (3×512)", lr: "—", batch: "—", optimizer: "—", dropout: "—", batchnorm: "—", l2: "—", earlyStop: "—", bestVal: 0.5240 },
-  { name: "Deep", architecture: "Deep (5×512)", lr: "—", batch: "—", optimizer: "—", dropout: "—", batchnorm: "—", l2: "—", earlyStop: "—", bestVal: 0.5298 },
-  { name: "LR Tuning", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "—", batchnorm: "—", l2: "—", earlyStop: "—", bestVal: 0.5264 },
-  { name: "Batch Tuning", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "—", batchnorm: "—", l2: "—", earlyStop: "—", bestVal: 0.5252 },
-  { name: "Optimizer (Adam)", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "—", batchnorm: "—", l2: "—", earlyStop: "—", bestVal: 0.5278 },
-  { name: "Optimizer (SGD)", architecture: "Medium (3×512)", lr: "0.01", batch: "128", optimizer: "SGD", dropout: "—", batchnorm: "—", l2: "—", earlyStop: "—", bestVal: 0.4928 },
-  { name: "Dropout", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "0.3", batchnorm: "—", l2: "—", earlyStop: "—", bestVal: 0.5416 },
-  { name: "Early Stopping", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "—", batchnorm: "—", l2: "—", earlyStop: "yes", bestVal: 0.5204 },
-  { name: "L2", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "—", batchnorm: "—", l2: "0.0001", earlyStop: "—", bestVal: 0.5284 },
-  { name: "BatchNorm", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "—", batchnorm: "yes", l2: "—", earlyStop: "—", bestVal: 0.4464 },
-  { name: "Final Model", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "0.3", batchnorm: "—", l2: "—", earlyStop: "yes", bestVal: 0.5462, selected: true },
+  { name: "Baseline", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5196 },
+  { name: "Shallow", architecture: "Shallow (1×512)", lr: "-", batch: "-", optimizer: "-", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5222 },
+  { name: "Medium", architecture: "Medium (3×512)", lr: "-", batch: "-", optimizer: "-", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5240 },
+  { name: "Deep", architecture: "Deep (5×512)", lr: "-", batch: "-", optimizer: "-", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5298 },
+  { name: "LR Tuning", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5264 },
+  { name: "Batch Tuning", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5252 },
+  { name: "Optimizer (Adam)", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5278 },
+  { name: "Optimizer (SGD)", architecture: "Medium (3×512)", lr: "0.01", batch: "128", optimizer: "SGD", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.4928 },
+  { name: "Dropout", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "0.3", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5416 },
+  { name: "Early Stopping", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "yes", bestVal: 0.5204 },
+  { name: "L2", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "0.0001", earlyStop: "-", bestVal: 0.5284 },
+  { name: "BatchNorm", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "yes", l2: "-", earlyStop: "-", bestVal: 0.4464 },
+  { name: "Final Model", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "0.3", batchnorm: "-", l2: "-", earlyStop: "yes", bestVal: 0.5462, selected: true },
 ];
 
 // ---------------------------------------------------------------- Part 19
 
 export const findings = [
-  { n: "01", title: "Depth did almost nothing", detail: "0.76 points across 1, 3 and 5 hidden layers — 38 images out of 5,000, inside the noise of the validation set." },
+  { n: "01", title: "Depth did almost nothing", detail: "0.76 points across 1, 3 and 5 hidden layers, which is 38 images out of 5,000, inside the noise of the validation set." },
   { n: "02", title: "Width is where the parameters live", detail: "The first hidden layer holds 1,573,376 of the Medium model's 2,103,818 parameters: 75% of the network sits between the input and layer one." },
   { n: "03", title: "Every architecture overfit", detail: "Training accuracy reached 82% while validation sat at 52%. The problem was never capacity." },
-  { n: "04", title: "Regularization beat architecture", detail: "Dropout closed the gap from 32.11% to 4.47% — more than any change of depth achieved." },
+  { n: "04", title: "Regularization beat architecture", detail: "Dropout closed the gap from 32.11% to 4.47%, more than any change of depth achieved." },
   { n: "05", title: "BatchNorm made it worse", detail: "99.20% training accuracy against 40.70% validation. The highest-scoring model on training data was the worst model in the project." },
   { n: "06", title: "Augmentation won outright", detail: "59.12% best validation accuracy with flip + shift, the highest number recorded anywhere in the project, at zero parameter cost." },
 ];
@@ -436,12 +436,12 @@ export const reflection = [
 ];
 
 export const conclusion =
-  "The best model is not the model with the highest training accuracy. The final decision was made on validation performance, generalization behaviour, learning curves and controlled experiments — while respecting the project restriction against CNNs and transfer learning.";
+  "The best model is not the model with the highest training accuracy. The final decision was made on validation performance, generalization behaviour, learning curves and controlled experiments, while respecting the project restriction against CNNs and transfer learning.";
 
 // ---------------------------------------------------------------- Part 20 + deployment
 
 export const deploymentCard = {
-  what: "The Medium network — 3 × 512 Dense, Adam at 0.0001, batch 128, Dropout 0.3, Early Stopping",
+  what: "The Medium network: 3 × 512 Dense, Adam at 0.0001, batch 128, Dropout 0.3, Early Stopping",
   params: 2_103_818,
   sizeMB: 8.03,
   accuracy: 0.5408,
@@ -463,7 +463,7 @@ export const deploymentGuidance = [
   {
     tone: "no" as const,
     title: "Do not trust it on animals",
-    detail: "Cat scores 0.36 F1 and dog 0.43. Cat and dog alone account for 383 of the model's errors — the largest confusion pair in the matrix.",
+    detail: "Cat scores 0.36 F1 and dog 0.43. Cat and dog alone account for 383 of the model's errors, the largest confusion pair in the matrix.",
   },
   {
     tone: "next" as const,
@@ -476,7 +476,7 @@ export const flatteningCosts = [
   {
     question: "What happens to the spatial structure after flattening?",
     answer:
-      "It is removed. 32 × 32 × 3 becomes 3,072 × 1. Every pixel value survives, but their arrangement does not — the model receives a long vector of numbers rather than a structured image.",
+      "It is removed. 32 × 32 × 3 becomes 3,072 × 1. Every pixel value survives, but their arrangement does not, because the model receives a long vector of numbers rather than a structured image.",
   },
   {
     question: "Does a Dense network know which pixels are neighbours?",
@@ -486,7 +486,7 @@ export const flatteningCosts = [
   {
     question: "Why does that make image classification harder?",
     answer:
-      "Because the patterns that identify objects — edges, corners, textures, shapes, relationships between nearby regions — are local and spatial. A Dense layer has to relearn each of them separately at every position, which costs parameters and invites overfitting.",
+      "Because the patterns that identify objects, such as edges, corners, textures, shapes and the relationships between nearby regions, are local and spatial. A Dense layer has to relearn each of them separately at every position, which costs parameters and invites overfitting.",
   },
   {
     question: "What would an architecture built for images preserve?",
@@ -523,7 +523,7 @@ export const cnnComparison = [
   },
   {
     aspect: "Response to augmentation",
-    dense: "A shifted image is a nearly unrelated input vector — the network must learn the same object a second time.",
+    dense: "A shifted image is a nearly unrelated input vector, so the network must learn the same object a second time.",
     cnn: "Absorbs flips and shifts naturally, because the filter that matched before still matches after.",
   },
 ];
@@ -570,11 +570,11 @@ export const mobilenetSamples: SampleTrial[] = [
 export const cnnEvidence = [
   {
     label: "Augmentation pointed the same way",
-    detail: "Adding spatial variety — flip and shift — bought +6.28 points and closed the gap from 0.4085 to 0.0791. More spatial information helped where more parameters had not.",
+    detail: "Adding spatial variety, flip and shift, bought +6.28 points and closed the gap from 0.4085 to 0.0791. More spatial information helped where more parameters had not.",
   },
   {
     label: "Confusion is spatial",
-    detail: "Cat/dog (383 errors) and automobile/truck (330) are classes that differ in shape and local texture — exactly the information flattening discards.",
+    detail: "Cat/dog (383 errors) and automobile/truck (330) are classes that differ in shape and local texture, which is exactly the information flattening discards.",
   },
   {
     label: "Tuning had run out",
@@ -583,7 +583,7 @@ export const cnnEvidence = [
 ];
 
 export const finalReflection =
-  "This project showed that a fully connected Dense network can perform image classification, but it is not designed to understand images. Flattening a 32 × 32 × 3 image into 3,072 values removes the explicit spatial structure and makes local visual patterns harder to learn. The limitations measured here are a clear motivation for architectures that preserve spatial information — a natural transition to Computer Vision and Convolutional Neural Networks.";
+  "This project showed that a fully connected Dense network can perform image classification, but it is not designed to understand images. Flattening a 32 × 32 × 3 image into 3,072 values removes the explicit spatial structure and makes local visual patterns harder to learn. The limitations measured here are a clear motivation for architectures that preserve spatial information, a natural transition to Computer Vision and Convolutional Neural Networks.";
 
 // ---------------------------------------------------------------- credits
 
