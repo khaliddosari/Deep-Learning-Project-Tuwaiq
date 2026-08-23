@@ -1,0 +1,335 @@
+[
+  {
+    "id": "nb1_class_distribution",
+    "file": "nb1_class_distribution.png",
+    "tab": "before",
+    "section": "data_split",
+    "part": "Part 1",
+    "title": "Examples per class (Train vs Test)",
+    "caption": "Balanced distribution of 5,000 training and 1,000 test images for each of the 10 CIFAR-10 classes."
+  },
+  {
+    "id": "nb1_pixel_raw",
+    "file": "nb1_pixel_raw.png",
+    "tab": "before",
+    "section": "data_split",
+    "part": "Part 1",
+    "title": "Raw pixel-intensity distribution (2,000 sample images)",
+    "caption": "Distribution of unnormalized pixel intensities [0, 255] across 2,000 random training images (mean 120.71, std 64.15)."
+  },
+  {
+    "id": "nb1_pixel_normalized",
+    "file": "nb1_pixel_normalized.png",
+    "tab": "before",
+    "section": "data_split",
+    "part": "Part 2",
+    "title": "Normalized pixel-intensity distribution (2,000 sample images)",
+    "caption": "Distribution of scaled pixel values [0.0, 1.0] after division by 255.0 (mean 0.47, std 0.25)."
+  },
+  {
+    "id": "nb1_random_samples",
+    "file": "nb1_random_samples.png",
+    "tab": "before",
+    "section": "data_split",
+    "part": "Part 1",
+    "title": "15 random training images",
+    "caption": "Random 32\u00d732 pixel images sampled from the training set with their corresponding class labels."
+  },
+  {
+    "id": "nb1_class_examples",
+    "file": "nb1_class_examples.png",
+    "tab": "before",
+    "section": "data_split",
+    "part": "Part 1",
+    "title": "One example of each of the 10 classes",
+    "caption": "First training example from each of the 10 CIFAR-10 classes illustrating visual diversity and low resolution."
+  },
+  {
+    "id": "nb2_baseline_curves",
+    "file": "nb2_baseline_curves.png",
+    "tab": "before",
+    "section": "baseline",
+    "part": "Part 3",
+    "title": "Baseline - 1 hidden layer, 128 units",
+    "caption": "Training vs validation loss and accuracy curves for the initial 1-hidden-layer 128-unit baseline with min val loss marker."
+  },
+  {
+    "id": "nb2_shallow_curves",
+    "file": "nb2_shallow_curves.png",
+    "tab": "before",
+    "section": "architectures",
+    "part": "Part 5",
+    "title": "Shallow: 1 hidden layer, 128 units",
+    "caption": "Loss and accuracy learning curves for the shallow architecture (min val loss at epoch 18)."
+  },
+  {
+    "id": "nb2_medium_curves",
+    "file": "nb2_medium_curves.png",
+    "tab": "before",
+    "section": "architectures",
+    "part": "Part 6",
+    "title": "Medium: 2 hidden layers, 128 units",
+    "caption": "Loss and accuracy learning curves for the medium architecture (min val loss at epoch 13)."
+  },
+  {
+    "id": "nb2_deep_curves",
+    "file": "nb2_deep_curves.png",
+    "tab": "before",
+    "section": "architectures",
+    "part": "Part 7",
+    "title": "Deep: 3 hidden layers, 128 units",
+    "caption": "Loss and accuracy learning curves for the deep architecture (min val loss at epoch 12)."
+  },
+  {
+    "id": "nb2_all_architectures",
+    "file": "nb2_all_architectures.png",
+    "tab": "before",
+    "section": "architectures",
+    "part": "Part 7",
+    "title": "Validation loss & accuracy - all architectures",
+    "caption": "Direct comparison of validation loss and validation accuracy across shallow, medium, and deep networks."
+  },
+  {
+    "id": "nb3_medium_baseline_loss",
+    "file": "nb3_medium_baseline_loss.png",
+    "tab": "before",
+    "section": "diagnosis",
+    "part": "Part 8",
+    "title": "Medium Baseline - Loss",
+    "caption": "Training vs validation loss for the medium baseline showing overfitting after epoch 13."
+  },
+  {
+    "id": "nb3_medium_baseline_accuracy",
+    "file": "nb3_medium_baseline_accuracy.png",
+    "tab": "before",
+    "section": "diagnosis",
+    "part": "Part 8",
+    "title": "Medium Baseline - Accuracy",
+    "caption": "Training vs validation accuracy for the medium baseline showing divergence."
+  },
+  {
+    "id": "nb3_lr_0.01_acc",
+    "file": "nb3_lr_0.01_acc.png",
+    "tab": "after",
+    "section": "learning_rate",
+    "part": "Part 9",
+    "title": "Learning Rate = 0.01 - Accuracy",
+    "caption": "Training and validation accuracy across 50 epochs for LR = 0.01."
+  },
+  {
+    "id": "nb3_lr_0.01_loss",
+    "file": "nb3_lr_0.01_loss.png",
+    "tab": "after",
+    "section": "learning_rate",
+    "part": "Part 9",
+    "title": "Learning Rate = 0.01 - Loss",
+    "caption": "Training and validation loss across 50 epochs for LR = 0.01."
+  },
+  {
+    "id": "nb3_lr_0.001_acc",
+    "file": "nb3_lr_0.001_acc.png",
+    "tab": "after",
+    "section": "learning_rate",
+    "part": "Part 9",
+    "title": "Learning Rate = 0.001 - Accuracy",
+    "caption": "Training and validation accuracy across 50 epochs for LR = 0.001."
+  },
+  {
+    "id": "nb3_lr_0.001_loss",
+    "file": "nb3_lr_0.001_loss.png",
+    "tab": "after",
+    "section": "learning_rate",
+    "part": "Part 9",
+    "title": "Learning Rate = 0.001 - Loss",
+    "caption": "Training and validation loss across 50 epochs for LR = 0.001."
+  },
+  {
+    "id": "nb3_lr_0.0001_acc",
+    "file": "nb3_lr_0.0001_acc.png",
+    "tab": "after",
+    "section": "learning_rate",
+    "part": "Part 9",
+    "title": "Learning Rate = 0.0001 - Accuracy",
+    "caption": "Training and validation accuracy across 50 epochs for LR = 0.0001."
+  },
+  {
+    "id": "nb3_lr_0.0001_loss",
+    "file": "nb3_lr_0.0001_loss.png",
+    "tab": "after",
+    "section": "learning_rate",
+    "part": "Part 9",
+    "title": "Learning Rate = 0.0001 - Loss",
+    "caption": "Training and validation loss across 50 epochs for LR = 0.0001."
+  },
+  {
+    "id": "nb3_batch_16_acc",
+    "file": "nb3_batch_16_acc.png",
+    "tab": "after",
+    "section": "batch_size",
+    "part": "Part 10",
+    "title": "Batch Size = 16 - Accuracy",
+    "caption": "Training and validation accuracy across 50 epochs for Batch Size = 16."
+  },
+  {
+    "id": "nb3_batch_16_loss",
+    "file": "nb3_batch_16_loss.png",
+    "tab": "after",
+    "section": "batch_size",
+    "part": "Part 10",
+    "title": "Batch Size = 16 - Loss",
+    "caption": "Training and validation loss across 50 epochs for Batch Size = 16."
+  },
+  {
+    "id": "nb3_batch_32_acc",
+    "file": "nb3_batch_32_acc.png",
+    "tab": "after",
+    "section": "batch_size",
+    "part": "Part 10",
+    "title": "Batch Size = 32 - Accuracy",
+    "caption": "Training and validation accuracy across 50 epochs for Batch Size = 32."
+  },
+  {
+    "id": "nb3_batch_32_loss",
+    "file": "nb3_batch_32_loss.png",
+    "tab": "after",
+    "section": "batch_size",
+    "part": "Part 10",
+    "title": "Batch Size = 32 - Loss",
+    "caption": "Training and validation loss across 50 epochs for Batch Size = 32."
+  },
+  {
+    "id": "nb3_batch_64_acc",
+    "file": "nb3_batch_64_acc.png",
+    "tab": "after",
+    "section": "batch_size",
+    "part": "Part 10",
+    "title": "Batch Size = 64 - Accuracy",
+    "caption": "Training and validation accuracy across 50 epochs for Batch Size = 64."
+  },
+  {
+    "id": "nb3_batch_64_loss",
+    "file": "nb3_batch_64_loss.png",
+    "tab": "after",
+    "section": "batch_size",
+    "part": "Part 10",
+    "title": "Batch Size = 64 - Loss",
+    "caption": "Training and validation loss across 50 epochs for Batch Size = 64."
+  },
+  {
+    "id": "nb3_batch_128_acc",
+    "file": "nb3_batch_128_acc.png",
+    "tab": "after",
+    "section": "batch_size",
+    "part": "Part 10",
+    "title": "Batch Size = 128 - Accuracy",
+    "caption": "Training and validation accuracy across 50 epochs for Batch Size = 128."
+  },
+  {
+    "id": "nb3_batch_128_loss",
+    "file": "nb3_batch_128_loss.png",
+    "tab": "after",
+    "section": "batch_size",
+    "part": "Part 10",
+    "title": "Batch Size = 128 - Loss",
+    "caption": "Training and validation loss across 50 epochs for Batch Size = 128."
+  },
+  {
+    "id": "nb3_opt_val_acc",
+    "file": "nb3_opt_val_acc.png",
+    "tab": "after",
+    "section": "optimizer",
+    "part": "Part 11",
+    "title": "Optimizer Comparison - Validation Accuracy",
+    "caption": "Validation accuracy comparison between Adam and SGD optimizers."
+  },
+  {
+    "id": "nb3_opt_val_loss",
+    "file": "nb3_opt_val_loss.png",
+    "tab": "after",
+    "section": "optimizer",
+    "part": "Part 11",
+    "title": "Optimizer Comparison - Validation Loss",
+    "caption": "Validation loss comparison between Adam and SGD optimizers."
+  },
+  {
+    "id": "nb3_reg_val_acc",
+    "file": "nb3_reg_val_acc.png",
+    "tab": "after",
+    "section": "regularization",
+    "part": "Part 12",
+    "title": "Validation Accuracy - Regularization Experiments",
+    "caption": "Validation accuracy comparison for Baseline, Dropout, Early Stopping, and L2 regularization."
+  },
+  {
+    "id": "nb3_reg_val_loss",
+    "file": "nb3_reg_val_loss.png",
+    "tab": "after",
+    "section": "regularization",
+    "part": "Part 12",
+    "title": "Validation Loss - Regularization Experiments",
+    "caption": "Validation loss comparison for Baseline, Dropout, Early Stopping, and L2 regularization."
+  },
+  {
+    "id": "nb3_bn_val_acc",
+    "file": "nb3_bn_val_acc.png",
+    "tab": "after",
+    "section": "batchnorm",
+    "part": "Part 13",
+    "title": "Validation Accuracy - Batch Normalization",
+    "caption": "Comparison of validation accuracy with and without Batch Normalization."
+  },
+  {
+    "id": "nb3_bn_val_loss",
+    "file": "nb3_bn_val_loss.png",
+    "tab": "after",
+    "section": "batchnorm",
+    "part": "Part 13",
+    "title": "Validation Loss - Batch Normalization",
+    "caption": "Comparison of validation loss with and without Batch Normalization."
+  },
+  {
+    "id": "nb3_ablation_val_acc",
+    "file": "nb3_ablation_val_acc.png",
+    "tab": "after",
+    "section": "ablation",
+    "part": "Part 14",
+    "title": "Ablation Experiment - Validation Accuracy",
+    "caption": "Validation accuracy comparison between models trained with and without Dropout."
+  },
+  {
+    "id": "nb3_confusion_matrix",
+    "file": "nb3_confusion_matrix.png",
+    "tab": "insights",
+    "section": "confusion_matrix",
+    "part": "Part 16",
+    "title": "Final Model - Test Set Confusion Matrix",
+    "caption": "Heatmap visualization of the 10\u00d710 confusion matrix on the 10,000 sealed test images."
+  },
+  {
+    "id": "nb3_misclassified_images",
+    "file": "nb3_misclassified_images.png",
+    "tab": "insights",
+    "section": "error_analysis",
+    "part": "Part 17",
+    "title": "Incorrectly Classified Test Images",
+    "caption": "10 sample test images misclassified by the final model, showing true vs predicted class labels."
+  },
+  {
+    "id": "nb3_augmentation_curves",
+    "file": "nb3_augmentation_curves.png",
+    "tab": "after",
+    "section": "augmentation",
+    "part": "Part 20 Extra",
+    "title": "Validation Accuracy & Loss - Augmentation Settings",
+    "caption": "Validation accuracy and validation loss curves across 100 epochs for No Augmentation, Flip only, and Flip + Shift."
+  },
+  {
+    "id": "nb3_augmentation_gap",
+    "file": "nb3_augmentation_gap.png",
+    "tab": "after",
+    "section": "augmentation",
+    "part": "Part 20 Extra",
+    "title": "Generalization Gap - Augmentation Settings",
+    "caption": "Generalization gap (Train Accuracy - Validation Accuracy) per epoch for the three data augmentation settings."
+  }
+]

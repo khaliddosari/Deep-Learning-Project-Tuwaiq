@@ -406,12 +406,87 @@ button:focus-visible { outline: 2px solid rgba(74, 39, 176, .35); outline-offset
 .link-button { margin-top: 12px; padding: 0; border: 0; background: transparent; color: var(--purple); font-size: 13.5px; font-weight: 700; cursor: pointer; border-bottom: 1.5px solid var(--lavender-strong); }
 .link-button:hover { border-bottom-color: var(--purple); }
 
+/* ---------------------------------------------------------------- notebook plots */
+
+.notebook-plot-card {
+  padding: 14px 16px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: white;
+  margin-top: 14px;
+}
+
+.notebook-plot-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.notebook-plot-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid var(--line-soft);
+  background: #ffffff;
+  display: block;
+}
+
+.notebook-plot-caption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+  text-align: center;
+  max-width: 90%;
+}
+
+.plot-picker-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.plot-pill {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--lavender);
+  color: var(--purple);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.plot-pill:hover {
+  background: var(--lavender-strong);
+}
+
+.plot-pill.active {
+  background: var(--purple);
+  color: white;
+  border-color: var(--purple);
+}
+
+.notebook-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.notebook-grid-2 .notebook-plot-card {
+  margin-top: 0;
+}
+
 /* ---------------------------------------------------------------- responsive & phone preview */
 
 @media (max-width: 1100px) {
   .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .arch-grid, .findings-grid, .reflection-grid, .evidence-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .chart-grid, .two-col, .deploy-hero { grid-template-columns: minmax(0, 1fr); }
+  .chart-grid, .two-col, .deploy-hero, .notebook-grid-2 { grid-template-columns: minmax(0, 1fr); }
   .setting-list > article, .setting-list > article.cols-a, .setting-list > article.cols-b { grid-template-columns: minmax(0, 1fr) minmax(90px, .7fr); }
   .setting-list span { grid-column: 1 / -1; }
   .sample-compare { grid-template-columns: 1fr; }

@@ -36,9 +36,11 @@ import {
   mobilenetBenchmark,
   mobilenetSamples,
   navItems,
+  type NotebookPlot,
   optimizerRuns,
   optimizerVerdict,
   perClass,
+  plotById,
   project,
   reflection,
   reproducibilityNote,
@@ -219,6 +221,160 @@ function RunList({ runs, max, format = pct }: { runs: Run[]; max: number; format
   );
 }
 
+// ---------------------------------------------------------------- notebook plot components
+
+function NotebookPlotCard({
+  plot,
+  note,
+}: {
+  plot?: NotebookPlot;
+  note?: string;
+}) {
+  if (!plot) return null;
+  return (
+    <section className="notebook-plot-card">
+      <div className="chart-heading">
+        <h2>{plot.title}</h2>
+        <span>{note ?? `${plot.part} · Original Notebook Plot`}</span>
+      </div>
+      <figure className="notebook-plot-figure">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/plots/${plot.file}`}
+          alt={plot.title}
+          className="notebook-plot-img"
+          loading="lazy"
+        />
+        <figcaption className="notebook-plot-caption">{plot.caption}</figcaption>
+      </figure>
+    </section>
+  );
+}
+
+function ArchitecturePlotsSelector() {
+  const [selected, setSelected] = useState<"all" | "shallow" | "medium" | "deep">("all");
+  const options = [
+    { key: "all" as const, label: "All Architectures Comparison", plot: plotById.nb2_all_architectures },
+    { key: "shallow" as const, label: "Shallow (1 layer)", plot: plotById.nb2_shallow_curves },
+    { key: "medium" as const, label: "Medium (2 layers)", plot: plotById.nb2_medium_curves },
+    { key: "deep" as const, label: "Deep (3 layers)", plot: plotById.nb2_deep_curves },
+  ];
+  const active = options.find((o) => o.key === selected) ?? options[0];
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <div className="plot-picker-tabs">
+        {options.map((opt) => (
+          <button
+            key={opt.key}
+            className={`plot-pill${selected === opt.key ? " active" : ""}`}
+            onClick={() => setSelected(opt.key)}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+      <NotebookPlotCard plot={active.plot} />
+    </div>
+  );
+}
+
+function LearningRatePlotsSelector() {
+  const [selectedLr, setSelectedLr] = useState<"0.0001" | "0.001" | "0.01">("0.0001");
+  const lrs = [
+    {
+      lr: "0.0001" as const,
+      label: "LR = 0.0001 (Selected)",
+      acc: plotById["nb3_lr_0.0001_acc"],
+      loss: plotById["nb3_lr_0.0001_loss"],
+    },
+    {
+      lr: "0.001" as const,
+      label: "LR = 0.001",
+      acc: plotById["nb3_lr_0.001_acc"],
+      loss: plotById["nb3_lr_0.001_loss"],
+    },
+    {
+      lr: "0.01" as const,
+      label: "LR = 0.01",
+      acc: plotById["nb3_lr_0.01_acc"],
+      loss: plotById["nb3_lr_0.01_loss"],
+    },
+  ];
+  const active = lrs.find((l) => l.lr === selectedLr) ?? lrs[0];
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <div className="plot-picker-tabs">
+        {lrs.map((item) => (
+          <button
+            key={item.lr}
+            className={`plot-pill${selectedLr === item.lr ? " active" : ""}`}
+            onClick={() => setSelectedLr(item.lr)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <div className="notebook-grid-2">
+        <NotebookPlotCard plot={active.acc} />
+        <NotebookPlotCard plot={active.loss} />
+      </div>
+    </div>
+  );
+}
+
+function BatchSizePlotsSelector() {
+  const [selectedBs, setSelectedBs] = useState<"128" | "64" | "32" | "16">("128");
+  const batches = [
+    {
+      bs: "128" as const,
+      label: "Batch Size = 128 (Selected)",
+      acc: plotById.nb3_batch_128_acc,
+      loss: plotById.nb3_batch_128_loss,
+    },
+    {
+      bs: "64" as const,
+      label: "Batch Size = 64",
+      acc: plotById.nb3_batch_64_acc,
+      loss: plotById.nb3_batch_64_loss,
+    },
+    {
+      bs: "32" as const,
+      label: "Batch Size = 32",
+      acc: plotById.nb3_batch_32_acc,
+      loss: plotById.nb3_batch_32_loss,
+    },
+    {
+      bs: "16" as const,
+      label: "Batch Size = 16",
+      acc: plotById.nb3_batch_16_acc,
+      loss: plotById.nb3_batch_16_loss,
+    },
+  ];
+  const active = batches.find((b) => b.bs === selectedBs) ?? batches[0];
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <div className="plot-picker-tabs">
+        {batches.map((item) => (
+          <button
+            key={item.bs}
+            className={`plot-pill${selectedBs === item.bs ? " active" : ""}`}
+            onClick={() => setSelectedBs(item.bs)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <div className="notebook-grid-2">
+        <NotebookPlotCard plot={active.acc} />
+        <NotebookPlotCard plot={active.loss} />
+      </div>
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------- view 1
 
 function BeforeOptimization() {
@@ -283,6 +439,13 @@ function BeforeOptimization() {
         The validation set is carved out of the training half only, stratified so every class contributes exactly 500
         images. Nothing from the test set influences any architecture or hyperparameter decision.
       </p>
+      <NotebookPlotCard plot={plotById.nb1_class_distribution} />
+      <div className="notebook-grid-2">
+        <NotebookPlotCard plot={plotById.nb1_pixel_raw} />
+        <NotebookPlotCard plot={plotById.nb1_pixel_normalized} />
+      </div>
+      <NotebookPlotCard plot={plotById.nb1_class_examples} />
+      <NotebookPlotCard plot={plotById.nb1_random_samples} />
 
       <SectionHeading note="Part 3">The baseline</SectionHeading>
       <div className="two-col">
@@ -315,6 +478,7 @@ function BeforeOptimization() {
           </div>
         </div>
       </div>
+      <NotebookPlotCard plot={plotById.nb2_baseline_curves} />
 
       <SectionHeading note="Parts 4 to 7, same data and seed, only depth changes">Three depths, one width</SectionHeading>
       <div className="arch-grid">
@@ -348,6 +512,7 @@ function BeforeOptimization() {
           <LineChart lines={archLines("valLoss")} caption="Validation loss per epoch. Shallow stays flat, medium rises after epoch 13, deep rises hardest after epoch 12." />
         </ChartCard>
       </div>
+      <ArchitecturePlotsSelector />
       <Insight>
         Depth bought overfitting, not accuracy. All three land within {architectureSpread.images} images of each other on
         a {architectureSpread.validationSize.toLocaleString()}-image validation set, where the standard error is about{" "}
@@ -397,6 +562,10 @@ function BeforeOptimization() {
             caption="Training loss falls all 50 epochs while validation loss bottoms at 1.4024 on epoch 13 and rises to 1.7835."
           />
         </ChartCard>
+      </div>
+      <div className="notebook-grid-2">
+        <NotebookPlotCard plot={plotById.nb3_medium_baseline_accuracy} />
+        <NotebookPlotCard plot={plotById.nb3_medium_baseline_loss} />
       </div>
       <Insight tone="red">
         Training loss falls for all 50 epochs. Validation loss bottoms at epoch 13 and ends 27.2% higher. Everything after epoch 13 is memorisation.
@@ -460,6 +629,7 @@ function AfterOptimization() {
           <LineChart lines={seriesFrom(curves.learningRate, "valLoss", (n) => `LR ${n}`)} caption="Validation loss per epoch. The 0.001 run peaks at epoch 12 then diverges sharply." />
         </ChartCard>
       </div>
+      <LearningRatePlotsSelector />
 
       <SectionHeading note="Part 10, at the selected learning rate">Batch size</SectionHeading>
       <div className="two-col">
@@ -488,6 +658,7 @@ function AfterOptimization() {
           <LineChart lines={seriesFrom(curves.batchSize, "valLoss", (n) => `Batch ${n}`)} caption="Validation loss per epoch. Batch 16 ends at 3.4169 against 1.8806 for batch 128." />
         </ChartCard>
       </div>
+      <BatchSizePlotsSelector />
 
       <SectionHeading note="Part 11">Optimizer</SectionHeading>
       <div className="two-col">
@@ -515,6 +686,10 @@ function AfterOptimization() {
         <ChartCard title="Validation loss: Adam against SGD" note="Adam overfits after its best epoch">
           <LineChart lines={seriesFrom(curves.optimizer, "valLoss")} caption="Validation loss per epoch for Adam and SGD." />
         </ChartCard>
+      </div>
+      <div className="notebook-grid-2">
+        <NotebookPlotCard plot={plotById.nb3_opt_val_acc} />
+        <NotebookPlotCard plot={plotById.nb3_opt_val_loss} />
       </div>
 
       <SectionHeading note="Part 12, three regularizers against an unregularized baseline">Regularization</SectionHeading>
@@ -555,6 +730,10 @@ function AfterOptimization() {
           <LineChart lines={seriesFrom(curves.regularization, "valLoss")} caption="Validation loss per epoch. Dropout is the only run whose loss does not turn upward." />
         </ChartCard>
       </div>
+      <div className="notebook-grid-2">
+        <NotebookPlotCard plot={plotById.nb3_reg_val_acc} />
+        <NotebookPlotCard plot={plotById.nb3_reg_val_loss} />
+      </div>
       <Insight>{regularizationVerdict}</Insight>
 
       <SectionHeading note="Part 13, the same network with and without">Batch Normalization</SectionHeading>
@@ -588,6 +767,10 @@ function AfterOptimization() {
           caption="With Batch Normalization training accuracy reaches 99.20% while validation accuracy falls to 40.70%."
         />
       </ChartCard>
+      <div className="notebook-grid-2">
+        <NotebookPlotCard plot={plotById.nb3_bn_val_acc} />
+        <NotebookPlotCard plot={plotById.nb3_bn_val_loss} />
+      </div>
 
       <SectionHeading note="Part 14, one variable removed, everything else identical">Dropout ablation</SectionHeading>
       <div className="two-col">
@@ -611,6 +794,7 @@ function AfterOptimization() {
       <ChartCard title="Dropout ablation: validation accuracy" note="best val differs by 89 images out of 5,000">
         <LineChart lines={seriesFrom(curves.ablation, "valAcc")} yFormat={(v) => `${(v * 100).toFixed(0)}%`} caption="Validation accuracy per epoch with and without Dropout." />
       </ChartCard>
+      <NotebookPlotCard plot={plotById.nb3_ablation_val_acc} />
 
       <SectionHeading note="Part 15">The final model</SectionHeading>
       <div className="two-col">
@@ -796,6 +980,10 @@ function AfterOptimization() {
           </table>
         </div>
       </div>
+      <div className="notebook-grid-2">
+        <NotebookPlotCard plot={plotById.nb3_augmentation_curves} />
+        <NotebookPlotCard plot={plotById.nb3_augmentation_gap} />
+      </div>
       <p className="footnote">{augmentationVerdict}</p>
       <Insight tone="green">
         +6.28 points and the gap nearly closed, from 0.4085 to 0.0791. This is the strongest single result in the
@@ -937,6 +1125,10 @@ function Insights({ navigate }: { navigate: (view: ViewId) => void }) {
             </p>
           </article>
         </div>
+      </div>
+      <div className="notebook-grid-2">
+        <NotebookPlotCard plot={plotById.nb3_confusion_matrix} note="Part 16 · ConfusionMatrixDisplay Heatmap" />
+        <NotebookPlotCard plot={plotById.nb3_misclassified_images} note="Part 17 · 10 Misclassified Test Samples" />
       </div>
 
       <SectionHeading note="Part 19">What moved the needle</SectionHeading>

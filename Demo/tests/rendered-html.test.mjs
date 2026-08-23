@@ -278,3 +278,22 @@ test("every derived headline figure is the arithmetic it claims", async () => {
   assert.equal(data.experimentLog.length, 13);
   assert.equal(data.experimentLog.filter((r) => r.selected).length, 1);
 });
+
+test("all 37 notebook plots exist and are registered", async () => {
+  const { notebookPlots, plotById } = await import(new URL("../app/data.ts", import.meta.url));
+  const { stat } = await import("node:fs/promises");
+
+  assert.equal(notebookPlots.length, 37);
+  assert.equal(Object.keys(plotById).length, 37);
+
+  for (const plot of notebookPlots) {
+    assert.ok(plot.id, `plot has id`);
+    assert.ok(plot.file, `plot has file`);
+    assert.ok(plot.title, `plot has title`);
+    assert.ok(plot.caption, `plot has caption`);
+    const filePath = new URL(`../public/plots/${plot.file}`, import.meta.url);
+    const fileStat = await stat(filePath);
+    assert.ok(fileStat.size > 1000, `${plot.file} is non-empty (${fileStat.size} bytes)`);
+  }
+});
+
