@@ -45,9 +45,9 @@ to quantify the constraint, and it is kept strictly outside the Dense results.
 
 | Parts | Notebook | Covers |
 |---|---|---|
-| 1 to 2 | [Dataset understanding and preparation](Notebooks/01-02_dataset_understanding_and_preparation.ipynb) | Dataset facts, class balance, pixel range, normalization, and the stratified 45,000 / 5,000 / 10,000 split. |
-| 3 to 8 | [Baseline and architectures](Notebooks/03-08_baseline_and_architectures.ipynb) | The baseline network and why its hyperparameters were chosen, the shallow / medium / deep comparison under a fair protocol, learning curves, and the overfitting diagnosis. |
-| 9 to 20 | [Optimization and final analysis](Notebooks/9_20_optimization_and_final_analysis.ipynb) | Learning rate, batch size and optimizer sweeps, four regularizers, training stability, the Dropout ablation, the final model, the sealed test evaluation, augmentation, per-class analysis, conclusions and reflection. |
+| 1&nbsp;to&nbsp;2 | [Data&nbsp;preparation](Notebooks/01-02_dataset_understanding_and_preparation.ipynb) | Dataset facts, class balance, pixel range, normalization, and the stratified 45,000 / 5,000 / 10,000 split. |
+| 3&nbsp;to&nbsp;8 | [Architectures](Notebooks/03-08_baseline_and_architectures.ipynb) | The baseline network and why its hyperparameters were chosen, the shallow / medium / deep comparison under a fair protocol, learning curves, and the overfitting diagnosis. |
+| 9&nbsp;to&nbsp;20 | [Optimization](Notebooks/9_20_optimization_and_final_analysis.ipynb) | Learning rate, batch size and optimizer sweeps, four regularizers, training stability, the Dropout ablation, the final model, the sealed test evaluation, augmentation, per-class analysis, conclusions and reflection. |
 
 ## Setup
 
