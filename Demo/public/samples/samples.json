@@ -1,0 +1,72 @@
+[
+  {
+    "class_id": 0,
+    "class_name": "airplane",
+    "filename": "airplane.png",
+    "src": "/samples/airplane.png",
+    "test_index": 3
+  },
+  {
+    "class_id": 1,
+    "class_name": "automobile",
+    "filename": "automobile.png",
+    "src": "/samples/automobile.png",
+    "test_index": 6
+  },
+  {
+    "class_id": 2,
+    "class_name": "bird",
+    "filename": "bird.png",
+    "src": "/samples/bird.png",
+    "test_index": 25
+  },
+  {
+    "class_id": 3,
+    "class_name": "cat",
+    "filename": "cat.png",
+    "src": "/samples/cat.png",
+    "test_index": 0
+  },
+  {
+    "class_id": 4,
+    "class_name": "deer",
+    "filename": "deer.png",
+    "src": "/samples/deer.png",
+    "test_index": 22
+  },
+  {
+    "class_id": 5,
+    "class_name": "dog",
+    "filename": "dog.png",
+    "src": "/samples/dog.png",
+    "test_index": 12
+  },
+  {
+    "class_id": 6,
+    "class_name": "frog",
+    "filename": "frog.png",
+    "src": "/samples/frog.png",
+    "test_index": 4
+  },
+  {
+    "class_id": 7,
+    "class_name": "horse",
+    "filename": "horse.png",
+    "src": "/samples/horse.png",
+    "test_index": 13
+  },
+  {
+    "class_id": 8,
+    "class_name": "ship",
+    "filename": "ship.png",
+    "src": "/samples/ship.png",
+    "test_index": 1
+  },
+  {
+    "class_id": 9,
+    "class_name": "truck",
+    "filename": "truck.png",
+    "src": "/samples/truck.png",
+    "test_index": 11
+  }
+]

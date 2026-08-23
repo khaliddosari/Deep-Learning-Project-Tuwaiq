@@ -1,0 +1,10 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- The project in one mark: a 3x3 image grid flattened into a single row. -->
+  <rect x="2" y="2" width="5.6" height="5.6" rx="1.2" fill="#522cba"/>
+  <rect x="9.2" y="2" width="5.6" height="5.6" rx="1.2" fill="#9b78f7"/>
+  <rect x="16.4" y="2" width="5.6" height="5.6" rx="1.2" fill="#522cba"/>
+  <rect x="2" y="9.2" width="5.6" height="5.6" rx="1.2" fill="#9b78f7"/>
+  <rect x="9.2" y="9.2" width="5.6" height="5.6" rx="1.2" fill="#57e3d8"/>
+  <rect x="16.4" y="9.2" width="5.6" height="5.6" rx="1.2" fill="#9b78f7"/>
+  <rect x="2" y="18.4" width="20" height="3.6" rx="1.8" fill="#f4a664"/>
+</svg>
