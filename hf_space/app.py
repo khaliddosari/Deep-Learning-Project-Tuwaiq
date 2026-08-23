@@ -24,6 +24,7 @@ SAMPLES_DIR = PROJECT_ROOT / "Demo" / "public" / "samples"
 if not SAMPLES_DIR.exists():
     SAMPLES_DIR = PROJECT_ROOT / "samples"
 MOBILENET_PATH = MODELS_DIR / "mobilenet_cifar10.keras"
+DENSE_PATH = MODELS_DIR / "dense_final.keras"
 
 CLASS_NAMES = [
     "airplane",
@@ -38,12 +39,16 @@ CLASS_NAMES = [
     "truck",
 ]
 
-# Benchmark stats from the project's empirical experiments
+# Benchmark stats from the project's empirical experiments.
+# The saved Dense weights are the Part 15 recipe retrained by
+# scripts/sample_predictions.py, because the notebook never saved its model.
+# It scores 53.81% against the notebook run's 54.08%, the same run-to-run drift
+# Results/part15_rerun.json documents.
 DENSE_STATS = {
     "name": "Dense MLP (3 × 512, Dropout 0.3)",
-    "test_accuracy": "54.08%",
+    "test_accuracy": "53.81%",
     "parameters": "2,103,818",
-    "epochs": "50 (Early Stopping)",
+    "epochs": "45 of 50 (Early Stopping)",
     "input_nature": "Flattened 1D vector (3,072 features)",
     "architecture_type": "Fully-Connected (Non-Spatial)",
 }
@@ -79,16 +84,18 @@ def load_models():
         from src.mobilenet import build_mobilenet_v2
         mobilenet_model, _ = build_mobilenet_v2(seed=42)
 
-    # 2. Build standard Dense model architecture for baseline inference
-    from src.models import build_dense_model
-    dense_model = build_dense_model(
-        hidden_units=[512, 512, 512],
-        dropout=0.3,
-        learning_rate=1e-4,
-        seed=42,
-        name="dense_shipped_model",
-    )
-    print("Loaded Dense MLP baseline model")
+    # 2. Load the trained Dense baseline. Building the architecture without
+    #    loading weights would return an untrained network, and its predictions
+    #    would be noise presented as the project's 53.81% baseline, so this is
+    #    a hard failure rather than a fallback.
+    if not DENSE_PATH.exists():
+        raise FileNotFoundError(
+            f"Trained Dense weights not found at {DENSE_PATH}. "
+            "Run `python scripts/sample_predictions.py` to produce them. "
+            "Serving an untrained Dense model would misrepresent the baseline."
+        )
+    dense_model = tf.keras.models.load_model(DENSE_PATH)
+    print(f"Loaded trained Dense MLP from {DENSE_PATH}")
 
 
 def preprocess_image(image: Image.Image | np.ndarray) -> np.ndarray:
@@ -163,7 +170,7 @@ def predict(image: Image.Image | None):
 | **Inference Time** | {dense_latency:.2f} ms | {cnn_latency:.2f} ms |
 | **Architecture** | 3 × 512 Dense layers (`Flatten` first) | Depthwise Separable Convolutions |
 | **Spatial Awareness** | ❌ None (flattening discards 2D coordinates) | ✅ Intact (translation-invariant local filters) |
-| **CIFAR-10 Test Acc** | **54.08%** (ceiling reached at 50 epochs) | **91.24%** (reached in 6 epochs) |
+| **CIFAR-10 Test Acc** | **{DENSE_STATS['test_accuracy']}** (ceiling reached, Early Stopping at epoch 45) | **{MOBILENET_STATS['test_accuracy']}** (reached in 6 epochs) |
 | **Total Parameters** | 2,103,818 | 2,593,610 |
 
 > **Key DL Insight (Part 20 Reflection):**

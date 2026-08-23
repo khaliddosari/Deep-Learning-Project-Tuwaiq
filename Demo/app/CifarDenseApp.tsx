@@ -48,6 +48,7 @@ import {
   rerunVerdict,
   regularizationRuns,
   regularizationVerdict,
+  sampleTrialScore,
   splitRows,
   testResults,
   type ViewId,
@@ -102,9 +103,9 @@ function StatRows({ rows }: { rows: readonly (readonly [string, string])[] }) {
 
 // ---------------------------------------------------------------- line chart
 
-const CHART_W = 620;
-const CHART_H = 300;
-const PAD = { top: 18, right: 20, bottom: 52, left: 78 };
+const CHART_W = 520;
+const CHART_H = 190;
+const PAD = { top: 10, right: 12, bottom: 32, left: 52 };
 
 type Line = { label: string; values: readonly number[]; color: string; dashed?: boolean };
 
@@ -398,7 +399,7 @@ function BeforeOptimization() {
         </ChartCard>
       </div>
       <Insight tone="red">
-        The two curves move in opposite directions for 37 of the 50 epochs. Everything after epoch 13 is memorisation.
+        Training loss falls for all 50 epochs. Validation loss bottoms at epoch 13 and ends 27.2% higher. Everything after epoch 13 is memorisation.
       </Insight>
     </section>
   );
@@ -446,7 +447,7 @@ function AfterOptimization() {
           <h2>What the curves show</h2>
           <p>{learningRateVerdict}</p>
           <p>
-            0.0001 learns more slowly but more consistently, reaching its best validation accuracy at epoch 22 and
+            0.0001 learns more slowly but more consistently, reaching its best validation accuracy at epoch 25 and
             holding. It was carried into every experiment that follows.
           </p>
         </article>
@@ -455,7 +456,7 @@ function AfterOptimization() {
         <ChartCard title="Validation accuracy by learning rate" note="0.01 never gets off the floor">
           <LineChart lines={seriesFrom(curves.learningRate, "valAcc", (n) => `LR ${n}`)} yFormat={(v) => `${(v * 100).toFixed(0)}%`} caption="Validation accuracy per epoch for learning rates 0.01, 0.001 and 0.0001." />
         </ChartCard>
-        <ChartCard title="Validation loss by learning rate" note="0.001 diverges to 3.1259">
+        <ChartCard title="Validation loss by learning rate" note="0.001 diverges to 2.8688">
           <LineChart lines={seriesFrom(curves.learningRate, "valLoss", (n) => `LR ${n}`)} caption="Validation loss per epoch. The 0.001 run peaks at epoch 12 then diverges sharply." />
         </ChartCard>
       </div>
@@ -484,7 +485,7 @@ function AfterOptimization() {
           <LineChart lines={seriesFrom(curves.batchSize, "valAcc", (n) => `Batch ${n}`)} yFormat={(v) => `${(v * 100).toFixed(0)}%`} caption="Validation accuracy per epoch across four batch sizes." />
         </ChartCard>
         <ChartCard title="Validation loss by batch size" note="smaller batches diverge much harder">
-          <LineChart lines={seriesFrom(curves.batchSize, "valLoss", (n) => `Batch ${n}`)} caption="Validation loss per epoch. Batch 16 ends at 3.4160 against 1.8418 for batch 128." />
+          <LineChart lines={seriesFrom(curves.batchSize, "valLoss", (n) => `Batch ${n}`)} caption="Validation loss per epoch. Batch 16 ends at 3.4169 against 1.8806 for batch 128." />
         </ChartCard>
       </div>
 
@@ -508,7 +509,7 @@ function AfterOptimization() {
         </article>
       </div>
       <div className="chart-grid">
-        <ChartCard title="Validation accuracy: Adam against SGD" note="Adam peaks at 29, SGD is still climbing at 49">
+        <ChartCard title="Validation accuracy: Adam against SGD" note="Adam peaks at epoch 31, SGD is still climbing at 50">
           <LineChart lines={seriesFrom(curves.optimizer, "valAcc")} yFormat={(v) => `${(v * 100).toFixed(0)}%`} caption="Validation accuracy per epoch for Adam and SGD." />
         </ChartCard>
         <ChartCard title="Validation loss: Adam against SGD" note="Adam overfits after its best epoch">
@@ -547,7 +548,7 @@ function AfterOptimization() {
         </div>
       </div>
       <div className="chart-grid">
-        <ChartCard title="Validation accuracy by regularizer" note="Early Stopping halts at epoch 18">
+        <ChartCard title="Validation accuracy by regularizer" note="Early Stopping stops after 17 epochs">
           <LineChart lines={seriesFrom(curves.regularization, "valAcc")} yFormat={(v) => `${(v * 100).toFixed(0)}%`} caption="Validation accuracy per epoch for the baseline, Dropout, Early Stopping and L2." />
         </ChartCard>
         <ChartCard title="Validation loss by regularizer" note="only Dropout keeps it falling">
@@ -636,7 +637,7 @@ function AfterOptimization() {
                 { label: "Validation accuracy", values: curves.finalModel["Final Model"].valAcc, color: SERIES_COLORS[4], dashed: true },
               ]}
               yFormat={(v) => `${(v * 100).toFixed(0)}%`}
-              caption="Training and validation accuracy for the final model, which Early Stopping halted at epoch 21."
+              caption="Training and validation accuracy for the final model. It ran all 50 epochs and validation accuracy peaked at 54.62% on epoch 49."
             />
           </ChartCard>
         </div>
@@ -769,7 +770,7 @@ function AfterOptimization() {
 
       <SectionHeading note={`Extra experiment, ${augmentationEpochs} epochs, augmentation applied before Flatten`}>Data augmentation</SectionHeading>
       <div className="table-card">
-        <div className="table-title"><h2>More spatial variety, zero extra parameters</h2><span>against a no-augmentation control</span></div>
+        <div className="table-title"><h2>More spatial variety, zero extra parameters</h2><span>against a no-augmentation control · gap = {GAP_FINAL}</span></div>
         <div className="table-scroll">
           <table className="log-table">
             <thead>
@@ -1098,13 +1099,13 @@ function Deployment() {
 
       <SectionHeading note="Part 20, the four questions">What flattening costs</SectionHeading>
       <div className="flow">
-        <div>
+        <div className="flow-card">
           <span>The image</span>
           <strong>32 × 32 × 3</strong>
           <small>height, width and three colour channels, structure intact</small>
         </div>
-        <div className="arrow" aria-hidden="true">→</div>
-        <div>
+        <div className="flow-arrow" aria-hidden="true">→</div>
+        <div className="flow-card">
           <span>After Flatten</span>
           <strong>3,072 × 1</strong>
           <small>every value survives, the arrangement does not</small>
@@ -1160,8 +1161,8 @@ function Deployment() {
         <article className="deploy-card">
           <h2>{mobilenetBenchmark.name}</h2>
           <p>
-            Trained on the same committed CIFAR-10 split in 6 epochs (2 warmup plus 4 fine-tuning on laptop CPU) with
-            data augmentation, label smoothing, and cosine decay scheduling.
+            Trained on the same committed CIFAR-10 split in 6 epochs (2 warmup plus 4 fine-tuning) with data
+            augmentation, label smoothing and a cosine decay schedule.
           </p>
           <div className="contract">
             <div>
@@ -1172,25 +1173,28 @@ function Deployment() {
               </p>
             </div>
             <div>
-              <span>Live public inference demo</span>
+              <span>Live inference demo</span>
               <p>
-                <a href={mobilenetBenchmark.publicLiveUrl} target="_blank" rel="noreferrer">
-                  Open the live Gradio web app ↗
-                </a>
-                {" · "}
-                <code>{mobilenetBenchmark.gradioAppCommand}</code>
+                Run <code>{mobilenetBenchmark.gradioAppCommand}</code> from the project root. Gradio prints a fresh
+                public share link on start, valid for 72 hours.
               </p>
             </div>
           </div>
         </article>
         <div className="stack stack-tight">
-          <Metric value={mobilenetBenchmark.params.toLocaleString()} label="trainable parameters" />
-          <Metric value={`${mobilenetBenchmark.epochs} epochs`} label="training budget on CPU" />
+          <Metric value={mobilenetBenchmark.params.toLocaleString()} label="total parameters, 2,345,482 of them trainable while fine-tuning" />
+          <Metric value={`${mobilenetBenchmark.epochs} epochs`} label={`training budget, ${mobilenetBenchmark.trainingMinutes} minutes wall clock`} />
           <Metric value={pct(mobilenetBenchmark.testAccuracy)} label="test accuracy on 10,000 images" best />
         </div>
       </div>
 
-      <SectionHeading note="Interactive, all 10 CIFAR-10 classes">Live sample comparison</SectionHeading>
+      <SectionHeading note="One real test image per class, run through both models">Same ten images, both models</SectionHeading>
+      <div className="metric-grid">
+        <Metric value={`${sampleTrialScore.denseCorrect} of ${sampleTrialScore.total}`} label="correct from the Dense network" />
+        <Metric value={`${sampleTrialScore.cnnCorrect} of ${sampleTrialScore.total}`} label="correct from the MobileNetV2 CNN" best />
+        <Metric value={pct(testResults.f1)} label="Dense weighted F1 across the full test set" />
+        <Metric value={pct(mobilenetBenchmark.weightedF1)} label="CNN weighted F1 across the full test set" />
+      </div>
       <div className="table-card">
         <div className="table-title">
           <h2>Pick a class to compare the two models</h2>
@@ -1214,18 +1218,29 @@ function Deployment() {
             <img src={sample.src} alt={sample.name} />
             <small>Ground truth: <b>{sample.name}</b></small>
           </div>
-          <div className="sample-side dense">
-            <span>Dense model, flattened</span>
-            <p>Predicted: <b>{sample.densePred}</b> at {sample.denseConf}%</p>
-            <small>Class F1: {sample.denseF1}</small>
+          <div className={`sample-side ${sample.denseCorrect ? "correct" : "wrong"}`}>
+            <span>Dense network, flattened {sample.denseCorrect ? "· correct" : "· wrong"}</span>
+            <p>Predicted <b>{sample.densePred}</b> at {sample.denseConf}%</p>
+            <small>Test-set F1 for {sample.name}: {pct(sample.denseF1)}</small>
           </div>
-          <div className="sample-side cnn">
-            <span>MobileNetV2 CNN, spatial</span>
-            <p>Predicted: <b>{sample.cnnPred}</b> at {sample.cnnConf}%</p>
-            <small>{sample.notes}</small>
+          <div className={`sample-side ${sample.cnnCorrect ? "correct" : "wrong"}`}>
+            <span>MobileNetV2 CNN, spatial {sample.cnnCorrect ? "· correct" : "· wrong"}</span>
+            <p>Predicted <b>{sample.cnnPred}</b> at {sample.cnnConf}%</p>
+            <small>Test-set F1 for {sample.name}: {pct(sample.cnnF1)}</small>
           </div>
         </div>
       </div>
+      <p className="footnote">
+        Both predictions come from running the saved models over test image #{sample.testIndex}, not from a summary
+        table. The CNN is the committed <code>models/mobilenet_cifar10.keras</code>. The notebook never saved its Dense
+        weights, so these use the Part 15 recipe retrained from the same seed, which scores{" "}
+        {pct(sampleTrialScore.denseRebuildTestAccuracy)} on the test set against the notebook&rsquo;s{" "}
+        {pct(sampleTrialScore.shippedDenseTestAccuracy)}. Regenerate with <code>scripts/sample_predictions.py</code>.
+      </p>
+      <Insight tone="red">
+        Ten images is a demonstration, not a measurement. The measurement is the full test set: {pct(testResults.accuracy)}{" "}
+        for the Dense network against {pct(mobilenetBenchmark.testAccuracy)} for the CNN.
+      </Insight>
 
       <SectionHeading note="From this project's own measurements">Why we know the ceiling is architectural</SectionHeading>
       <div className="evidence-grid">
@@ -1254,10 +1269,13 @@ function Deployment() {
 
 export default function CifarDenseApp({ initialView = "before" }: { initialView?: ViewId } = {}) {
   const [view, setView] = useState<ViewId>(initialView);
+  const [navOpen, setNavOpen] = useState(true);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [view]);
+
+  const activeItem = navItems.find(([id]) => id === view);
 
   const content = useMemo(() => {
     switch (view) {
@@ -1279,8 +1297,19 @@ export default function CifarDenseApp({ initialView = "before" }: { initialView?
               <small>Deep Learning Capstone · {project.team.join(" and ")}</small>
             </div>
           </button>
+          <div className="header-actions">
+            <button
+              className="header-toggle-btn"
+              onClick={() => setNavOpen(!navOpen)}
+              aria-expanded={navOpen}
+              aria-label="Toggle navigation tabs"
+            >
+              <span>{navOpen ? "▲ Hide Tabs" : "▼ Show Tabs"}</span>
+              {activeItem ? <small style={{ opacity: 0.75 }}>({activeItem[2]})</small> : null}
+            </button>
+          </div>
         </div>
-        <nav className="tabs" aria-label="Project sections">
+        <nav className={`tabs${navOpen ? "" : " collapsed"}`} aria-label="Project sections">
           {navItems.map(([id, , label, parts]) => (
             <button
               key={id}

@@ -146,9 +146,9 @@ export const diagnosis = {
   model: "Medium: 3 hidden layers of 512 neurons, 2,103,818 parameters",
   verdict: "Overfitting, beginning around epoch 13",
   evidence: [
-    "Validation loss reaches its minimum of 1.4024 at epoch 13 and rises steadily afterwards: 1.402, 1.412, 1.522, 1.655, 1.784.",
+    "Validation loss reaches its minimum of 1.4024 at epoch 13 and rises steadily afterwards: 1.402, 1.412, 1.522, 1.655 and 1.784 at epochs 13, 20, 30, 40 and 50.",
     "Training loss falls across all 50 epochs, from 1.845 to 0.542, and training accuracy climbs from 0.343 to 0.820.",
-    "The gap widens from 0.0759 at the best epoch to 0.2993 at the final one.",
+    "The gap widens from 0.0759 at epoch 13, the lowest-validation-loss epoch, to 0.2993 at epoch 50.",
     "Validation accuracy peaks at 0.5240 on epoch 30 and then falls back to 0.5206.",
   ],
   ruledOut: [
@@ -380,20 +380,20 @@ export const rerunProtocol = {
     "The winner was chosen on validation and that decision recorded before the test set was touched. No tuning followed. All four test scores are shown for transparency, not because they were used to choose.",
 };
 
-/** Same config, same seed, two runs, ~0.8 points apart on test. */
+/** Same config, same seed, two runs, 0.57 points apart on test. */
 export const reproducibilityNote = {
   notebookVal: 0.5462,
   notebookTest: 0.5408,
   rerunVal: 0.5366,
   rerunTest: 0.5351,
   why:
-    "cuDNN picks convolution and GEMM algorithms at runtime and XLA fuses kernels opportunistically; neither is controlled by the seed. Run-to-run drift is therefore about the same size as the differences Part 12 was ranking regularizers on, which is the strongest argument in the project for reading small gaps as noise.",
+    "Seeding fixes the initial weights and the shuffle order, but not the order in which floating-point reductions are accumulated across threads, nor the kernels XLA chooses to fuse. Run-to-run drift is therefore about the same size as the differences Part 12 was ranking regularizers on, which is the strongest argument in the project for reading small gaps as noise.",
 };
 
 export const rerunVerdict = {
   headline: "Dropout is the entire effect. L2 is not measurable either alone or on top of it.",
   mechanism:
-    "Without Dropout, validation loss bottoms at epoch 15 or 16 and Early Stopping fires by epoch 20, so the model has stopped learning anything that generalises. With Dropout it keeps improving to epoch 44 and runs 46 epochs, and the generalization gap falls from the 0.11 to 0.14 band down to the 0.03 to 0.04 band.",
+    "Without Dropout, validation loss bottoms at epoch 14 or 15 and Early Stopping fires by epoch 19 or 20, so the model has stopped learning anything that generalises. With Dropout it keeps improving to epoch 44 and runs 46 epochs, and the generalization gap falls from the 0.11 to 0.14 band down to the 0.03 to 0.04 band.",
   recommendation:
     "Ship Dropout 0.3 plus Early Stopping, which is what Part 15 now does. Dropout + L2 scores 0.74 points higher, but that is one standard error, and Parts 4 to 7 already rejected extra depth on exactly that reasoning, so consistency says take the simpler model. It also has the lowest test loss of the four at 1.2941.",
   honest:
@@ -403,19 +403,19 @@ export const rerunVerdict = {
 // ---------------------------------------------------------------- Part 18
 
 export const experimentLog = [
-  { name: "Baseline", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5196 },
-  { name: "Shallow", architecture: "Shallow (1×512)", lr: "-", batch: "-", optimizer: "-", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5222 },
-  { name: "Medium", architecture: "Medium (3×512)", lr: "-", batch: "-", optimizer: "-", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5240 },
-  { name: "Deep", architecture: "Deep (5×512)", lr: "-", batch: "-", optimizer: "-", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5298 },
-  { name: "LR Tuning", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5264 },
-  { name: "Batch Tuning", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5252 },
-  { name: "Optimizer (Adam)", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5278 },
-  { name: "Optimizer (SGD)", architecture: "Medium (3×512)", lr: "0.01", batch: "128", optimizer: "SGD", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.4928 },
-  { name: "Dropout", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "0.3", batchnorm: "-", l2: "-", earlyStop: "-", bestVal: 0.5416 },
-  { name: "Early Stopping", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "-", earlyStop: "yes", bestVal: 0.5204 },
-  { name: "L2", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "-", l2: "0.0001", earlyStop: "-", bestVal: 0.5284 },
-  { name: "BatchNorm", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "-", batchnorm: "yes", l2: "-", earlyStop: "-", bestVal: 0.4464 },
-  { name: "Final Model", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "0.3", batchnorm: "-", l2: "-", earlyStop: "yes", bestVal: 0.5462, selected: true },
+  { name: "Baseline", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "No", batchnorm: "No", l2: "No", earlyStop: "No", bestVal: 0.5196 },
+  { name: "Shallow", architecture: "Shallow (1×512)", lr: "-", batch: "-", optimizer: "-", dropout: "No", batchnorm: "No", l2: "No", earlyStop: "No", bestVal: 0.5222 },
+  { name: "Medium", architecture: "Medium (3×512)", lr: "-", batch: "-", optimizer: "-", dropout: "No", batchnorm: "No", l2: "No", earlyStop: "No", bestVal: 0.5240 },
+  { name: "Deep", architecture: "Deep (5×512)", lr: "-", batch: "-", optimizer: "-", dropout: "No", batchnorm: "No", l2: "No", earlyStop: "No", bestVal: 0.5298 },
+  { name: "LR Tuning", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "No", batchnorm: "No", l2: "No", earlyStop: "No", bestVal: 0.5264 },
+  { name: "Batch Tuning", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "No", batchnorm: "No", l2: "No", earlyStop: "No", bestVal: 0.5252 },
+  { name: "Optimizer (Adam)", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "No", batchnorm: "No", l2: "No", earlyStop: "No", bestVal: 0.5278 },
+  { name: "Optimizer (SGD)", architecture: "Medium (3×512)", lr: "0.01", batch: "128", optimizer: "SGD", dropout: "No", batchnorm: "No", l2: "No", earlyStop: "No", bestVal: 0.4928 },
+  { name: "Dropout", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "0.3", batchnorm: "No", l2: "No", earlyStop: "No", bestVal: 0.5416 },
+  { name: "Early Stopping", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "No", batchnorm: "No", l2: "No", earlyStop: "Yes", bestVal: 0.5204 },
+  { name: "L2", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "No", batchnorm: "No", l2: "0.0001", earlyStop: "No", bestVal: 0.5284 },
+  { name: "BatchNorm", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "No", batchnorm: "Yes", l2: "No", earlyStop: "No", bestVal: 0.4464 },
+  { name: "Final Model", architecture: "Medium (3×512)", lr: "0.0001", batch: "128", optimizer: "Adam", dropout: "0.3", batchnorm: "No", l2: "No", earlyStop: "Yes", bestVal: 0.5462, selected: true },
 ];
 
 // ---------------------------------------------------------------- Part 19
@@ -453,7 +453,7 @@ export const deploymentGuidance = [
   {
     tone: "yes" as const,
     title: "Ship it as a teaching artefact",
-    detail: "The model, the split and the 20 experiments behind it are reproducible from a fixed seed. That is what this application demonstrates.",
+    detail: "The model, the split and the 13 tracked runs behind it are reproducible from a fixed seed. That is what this application demonstrates.",
   },
   {
     tone: "no" as const,
@@ -536,35 +536,60 @@ export const mobilenetBenchmark = {
   params: 2_593_610,
   epochs: 6,
   gainPoints: 37.16,
+  trainingMinutes: 13.6,
   latencyMs: 2.0,
   gradioAppCommand: "python app.py",
-  publicLiveUrl: "https://de7379d060ce1e8656.gradio.live",
-  hfSpaceUrl: "https://huggingface.co/spaces",
+  // A gradio.live share URL expires after 72 hours, so none is hard-coded here.
+  // app.py prints a fresh one every time it starts.
 };
 
 export interface SampleTrial {
   name: string;
   src: string;
+  /** Index into the 10,000-image test set, so the picture can be traced back. */
+  testIndex: number;
   densePred: string;
   denseConf: number;
+  denseCorrect: boolean;
+  /** Test-set F1 for this class from the shipped Dense model (Part 16). */
   denseF1: number;
   cnnPred: string;
   cnnConf: number;
-  notes: string;
+  cnnCorrect: boolean;
+  /** Test-set F1 for this class from the fine-tuned MobileNetV2. */
+  cnnF1: number;
 }
 
+/** One test image per class, run through both models.
+ *
+ *  Generated by scripts/sample_predictions.py into Results/sample_predictions.json.
+ *  The CNN is the committed models/mobilenet_cifar10.keras. The Dense weights are
+ *  the Part 15 recipe retrained from the same seed, because the notebook never
+ *  saved its model; that rebuild scores 53.81% on the test set against the
+ *  notebook's 54.08%, which is the same run-to-run drift reproducibilityNote
+ *  documents. Confidences are the softmax probability of the predicted class.
+ */
 export const mobilenetSamples: SampleTrial[] = [
-  { name: "airplane", src: "/samples/airplane.png", densePred: "airplane", denseConf: 48.2, denseF1: 0.60, cnnPred: "airplane", cnnConf: 84.6, notes: "Dense recognizes broad sky contrast but struggles with wing angle. CNN detects aerodynamic edges directly." },
-  { name: "automobile", src: "/samples/automobile.png", densePred: "truck", denseConf: 44.1, denseF1: 0.64, cnnPred: "automobile", cnnConf: 87.4, notes: "Automobile vs truck was the 2nd largest confusion pair in Dense (330 errors). MobileNet cleanly disambiguates wheel arches and roofline." },
-  { name: "bird", src: "/samples/bird.png", densePred: "bird", denseConf: 42.8, denseF1: 0.42, cnnPred: "bird", cnnConf: 85.0, notes: "Dense model's bird recall was only 42%. CNN separates feather texture and beak contour from background foliage." },
-  { name: "cat", src: "/samples/cat.png", densePred: "dog", denseConf: 49.3, denseF1: 0.36, cnnPred: "cat", cnnConf: 86.5, notes: "Cat was the absolute hardest class in Dense (0.36 F1, 383 dog confusion errors). MobileNet classifies cat with 86.5% confidence." },
-  { name: "deer", src: "/samples/deer.png", densePred: "horse", denseConf: 41.5, denseF1: 0.49, cnnPred: "deer", cnnConf: 86.8, notes: "Dense confused quadruped postures with horse/dog. CNN resolves antler contours and slender leg proportions." },
-  { name: "dog", src: "/samples/dog.png", densePred: "cat", denseConf: 45.7, denseF1: 0.43, cnnPred: "dog", cnnConf: 90.7, notes: "Dog was the 2nd hardest animal class in Dense. MobileNet achieves 90.7% confidence via spatial snout and ear feature maps." },
-  { name: "frog", src: "/samples/frog.png", densePred: "frog", denseConf: 58.6, denseF1: 0.65, cnnPred: "frog", cnnConf: 89.1, notes: "Frog had highest animal recall in Dense due to green chroma. CNN further increases confidence from 58% to 89%." },
-  { name: "horse", src: "/samples/horse.png", densePred: "horse", denseConf: 52.4, denseF1: 0.58, cnnPred: "horse", cnnConf: 96.2, notes: "MobileNet achieves near-certainty (96.2% confidence) on equine torso and mane structure." },
-  { name: "ship", src: "/samples/ship.png", densePred: "ship", denseConf: 62.1, denseF1: 0.68, cnnPred: "ship", cnnConf: 85.1, notes: "Easiest class in Dense due to horizontal water line. MobileNet solidifies classification with 85.1% confidence." },
-  { name: "truck", src: "/samples/truck.png", densePred: "truck", denseConf: 53.0, denseF1: 0.59, cnnPred: "truck", cnnConf: 91.8, notes: "Dense frequently confused trucks with automobiles. MobileNet captures rectangular freight geometry with 91.8% confidence." },
+  { name: "airplane", src: "/samples/airplane.png", testIndex: 3, densePred: "ship", denseConf: 27.3, denseCorrect: false, denseF1: 0.6138, cnnPred: "airplane", cnnConf: 84.6, cnnCorrect: true, cnnF1: 0.9278 },
+  { name: "automobile", src: "/samples/automobile.png", testIndex: 6, densePred: "dog", denseConf: 48.9, denseCorrect: false, denseF1: 0.6558, cnnPred: "automobile", cnnConf: 87.4, cnnCorrect: true, cnnF1: 0.9607 },
+  { name: "bird", src: "/samples/bird.png", testIndex: 25, densePred: "frog", denseConf: 34.8, denseCorrect: false, denseF1: 0.4251, cnnPred: "bird", cnnConf: 85.0, cnnCorrect: true, cnnF1: 0.9102 },
+  { name: "cat", src: "/samples/cat.png", testIndex: 0, densePred: "cat", denseConf: 52.2, denseCorrect: true, denseF1: 0.3596, cnnPred: "cat", cnnConf: 86.5, cnnCorrect: true, cnnF1: 0.8219 },
+  { name: "deer", src: "/samples/deer.png", testIndex: 22, densePred: "airplane", denseConf: 56.0, denseCorrect: false, denseF1: 0.4734, cnnPred: "deer", cnnConf: 86.8, cnnCorrect: true, cnnF1: 0.9045 },
+  { name: "dog", src: "/samples/dog.png", testIndex: 12, densePred: "frog", denseConf: 32.1, denseCorrect: false, denseF1: 0.4282, cnnPred: "dog", cnnConf: 90.7, cnnCorrect: true, cnnF1: 0.86 },
+  { name: "frog", src: "/samples/frog.png", testIndex: 4, densePred: "deer", denseConf: 63.2, denseCorrect: false, denseF1: 0.5940, cnnPred: "frog", cnnConf: 89.1, cnnCorrect: true, cnnF1: 0.9084 },
+  { name: "horse", src: "/samples/horse.png", testIndex: 13, densePred: "horse", denseConf: 65.9, denseCorrect: true, denseF1: 0.5970, cnnPred: "horse", cnnConf: 96.2, cnnCorrect: true, cnnF1: 0.9326 },
+  { name: "ship", src: "/samples/ship.png", testIndex: 1, densePred: "ship", denseConf: 50.1, denseCorrect: true, denseF1: 0.6608, cnnPred: "ship", cnnConf: 85.1, cnnCorrect: true, cnnF1: 0.9502 },
+  { name: "truck", src: "/samples/truck.png", testIndex: 11, densePred: "truck", denseConf: 79.6, denseCorrect: true, denseF1: 0.5918, cnnPred: "truck", cnnConf: 91.8, cnnCorrect: true, cnnF1: 0.9438 },
 ];
+
+/** How the two models did across those ten images. */
+export const sampleTrialScore = {
+  denseCorrect: 4,
+  cnnCorrect: 10,
+  total: 10,
+  denseRebuildTestAccuracy: 0.5381,
+  shippedDenseTestAccuracy: 0.5408,
+};
 
 /** The project's own evidence that the ceiling is architectural. */
 export const cnnEvidence = [
@@ -578,7 +603,7 @@ export const cnnEvidence = [
   },
   {
     label: "Tuning had run out",
-    detail: "20 experiments across depth, learning rate, batch size, optimizer, dropout, L2, early stopping and batch normalization moved the ceiling by a few points at most.",
+    detail: "Thirteen tracked runs across depth, learning rate, batch size, optimizer, dropout, L2, early stopping and batch normalization moved the ceiling by a few points at most.",
   },
 ];
 

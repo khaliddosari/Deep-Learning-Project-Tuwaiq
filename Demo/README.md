@@ -22,6 +22,10 @@ Nothing in this app is estimated, rounded up, or typed from memory.
   notebook.
 - **`app/data.ts` holds the summary figures**, each one traceable to a specific part of a specific notebook. The file's
   header comment names the sources.
+- **`mobilenetSamples` is generated too.** `../scripts/sample_predictions.py` runs both saved models over the ten test
+  images in `public/samples/` and writes `../Results/sample_predictions.json`. The CNN is the committed
+  `../models/mobilenet_cifar10.keras`; the notebook never saved its Dense weights, so the script retrains the Part 15
+  recipe from the same seed and reports what that rebuild scores (53.81% test, against the notebook's 54.08%).
 - **Charts are inline SVG** drawn from those per-epoch arrays. There is no smoothing and no interpolation, so a kink in
   a curve is a kink in the run.
 - **Derived figures are derived in the app**, not hardcoded: the confusion-pair ranking on tab 03 is computed from the
@@ -59,8 +63,9 @@ Selection was made on validation and recorded before the test set was touched; n
 #### A reproducibility caveat
 
 Re-running the *identical* shipped configuration with the same seed gave 53.66% val / 53.51% test, against the
-notebook's 54.62% / 54.08%. cuDNN's runtime algorithm selection and XLA's kernel fusion are not seed-controlled, so
-run-to-run drift is about the same size as the differences Part 12 was ranking regularizers on. The four re-run configs
+notebook's 54.62% / 54.08%. The seed fixes the initial weights and the shuffle order, but not the order floating-point
+reductions accumulate across threads nor which kernels XLA fuses, so run-to-run drift is about the same size as the
+differences Part 12 was ranking regularizers on. The four re-run configs
 are compared against each other, never against the notebook's numbers.
 
 ### Two different generalization gaps
@@ -103,6 +108,13 @@ total 1,000, that its diagonal reproduces both the per-class recalls and the rep
 every generated curve series is length-aligned, so a bad regeneration of `curves.ts` fails the build rather than
 quietly drawing the wrong picture. It also re-derives every stated contrast in the Part 15 re-run from the raw
 `../Results/part15_rerun.json`, so a claim in the UI cannot drift away from the number the experiment produced.
+
+Two further tests close the gap that let wrong figures in once already. One recomputes every run's best validation
+accuracy, best epoch, minimum validation loss, final training accuracy and gap straight from that run's own curve
+and compares them with what `data.ts` states. The other re-derives the per-class precision, recall and F1 from the
+confusion matrix, the weighted averages from the per-class values, the architecture spread from the three best
+validation accuracies, and each augmentation gain from the control. A hand-typed number that does not match the
+data it claims to summarise now fails `npm test`.
 
 ## Headline results
 
